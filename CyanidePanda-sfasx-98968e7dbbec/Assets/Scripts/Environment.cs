@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Environment : MonoBehaviour
 {
+    public static Environment instance;
+
     [SerializeField] private List<EnvironmentTile> AccessibleTiles;
     [SerializeField] private List<EnvironmentTile> InaccessibleTiles;
-    [SerializeField] private Vector2Int Size;
     [SerializeField] private float AccessiblePercentage;
+    [SerializeField] private Vector2Int Size;
 
     private EnvironmentTile[][] mMap;
     private List<EnvironmentTile> mAll;
@@ -22,6 +24,10 @@ public class Environment : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null)
+            Destroy(gameObject);
+        instance = this;
+
         mAll = new List<EnvironmentTile>();
         mToBeTested = new List<EnvironmentTile>();
     }
@@ -40,15 +46,32 @@ public class Environment : MonoBehaviour
                         for (int n = 0; n < mMap[x][y].Connections.Count; ++n)
                         {
                             Gizmos.color = Color.blue;
-                            Gizmos.DrawLine(mMap[x][y].Position, mMap[x][y].Connections[n].Position);
+                            if (mMap[x][y].Connections[n] != null)
+                            {
+                                Gizmos.DrawLine(mMap[x][y].Position, mMap[x][y].Connections[n].Position);
+                            }
                         }
                     }
 
                     // Use different colours to represent the state of the nodes
                     Color c = Color.white;
-                    if ( !mMap[x][y].IsAccessible )
+                    if (mMap[x][y].State != EnvironmentTile.TileState.None)
                     {
-                        c = Color.red;
+                        switch(mMap[x][y].State)
+                        {
+                            case EnvironmentTile.TileState.Player:
+                                c = Color.cyan;
+                                break;
+                            case EnvironmentTile.TileState.Enemy:
+                                c = Color.red;
+                                break;
+                            case EnvironmentTile.TileState.Obstacle:
+                                c = Color.black;
+                                break;
+                            default:
+                                c = Color.white;
+                                break;
+                        }
                     }
                     else
                     {
@@ -69,6 +92,13 @@ public class Environment : MonoBehaviour
         }
     }
 
+    public EnvironmentTile GetTile (int x, int y)
+    {
+        if (x < 0 || x > Size.x - 1 || y < 0 || y > Size.y - 1)
+            return null;
+        return mMap[x][y];
+    }
+
     private void Generate()
     {
         // Setup the map of the environment tiles according to the specified width and height
@@ -78,12 +108,13 @@ public class Environment : MonoBehaviour
 
         int halfWidth = Size.x / 2;
         int halfHeight = Size.y / 2;
-        Vector3 position = new Vector3( -(halfWidth * TileSize), 0.0f, -(halfHeight * TileSize) );
+        Vector3 position = new Vector3( -(halfWidth * TileSize) - (Size.x % 2 == 1 ? TileSize / 2 : 0.0F), 0.0f, -(halfHeight * TileSize) - (Size.y % 2 == 1 ? TileSize / 2 : 0.0F));
         bool start = true;
 
         for ( int x = 0; x < Size.x; ++x)
         {
             mMap[x] = new EnvironmentTile[Size.y];
+
             for ( int y = 0; y < Size.y; ++y)
             {
                 bool isAccessible = start || Random.value < AccessiblePercentage;
@@ -91,7 +122,8 @@ public class Environment : MonoBehaviour
                 EnvironmentTile prefab = tiles[Random.Range(0, tiles.Count)];
                 EnvironmentTile tile = Instantiate(prefab, position, Quaternion.identity, transform);
                 tile.Position = new Vector3( position.x + (TileSize / 2), TileHeight, position.z + (TileSize / 2));
-                tile.IsAccessible = isAccessible;
+                tile.GridPosition = new Vector2Int(x, y);
+                tile.State = isAccessible ? EnvironmentTile.TileState.None : EnvironmentTile.TileState.Obstacle;
                 tile.gameObject.name = string.Format("Tile({0},{1})", x, y);
                 mMap[x][y] = tile;
                 mAll.Add(tile);
@@ -106,7 +138,7 @@ public class Environment : MonoBehaviour
             }
 
             position.x += TileSize;
-            position.z = -(halfHeight * TileSize);
+            position.z = -(halfHeight * TileSize) - (Size.y % 2 == 1 ? TileSize / 2 : 0.0F);
         }
     }
 
@@ -118,25 +150,58 @@ public class Environment : MonoBehaviour
             for (int y = 0; y < Size.y; ++y)
             {
                 EnvironmentTile tile = mMap[x][y];
-                tile.Connections = new List<EnvironmentTile>();
-                if (x > 0)
+                tile.Connections = new List<EnvironmentTile>(4);
+                tile.Corners = new List<EnvironmentTile>(4);
+
+                // create 4 null tiles as placeholders
+                for (int i = 0; i < 4; i++)
                 {
-                    tile.Connections.Add(mMap[x - 1][y]);
+                    tile.Connections.Add(null);
+                    tile.Corners.Add(null);
                 }
 
+                if (x > 0)
+                {
+                    // left
+                    tile.Connections[3] = (mMap[x - 1][y]);
+                }
                 if (x < Size.x - 1)
                 {
-                    tile.Connections.Add(mMap[x + 1][y]);
+                    // right
+                    tile.Connections[1] = (mMap[x + 1][y]);
                 }
 
                 if (y > 0)
                 {
-                    tile.Connections.Add(mMap[x][y - 1]);
+                    // down
+                    tile.Connections[2] = (mMap[x][y - 1]);
                 }
-
                 if (y < Size.y - 1)
                 {
-                    tile.Connections.Add(mMap[x][y + 1]);
+                    // up
+                    tile.Connections[0] = (mMap[x][y + 1]);
+                }
+
+
+                if (y > 0 && x < Size.x - 1)
+                {
+                    // bottom right
+                    tile.Corners[2] = (mMap[x + 1][y - 1]);
+                }
+                if (y < Size.y - 1 && x < Size.x - 1)
+                {
+                    // top right
+                    tile.Corners[1] = (mMap[x + 1][y + 1]);
+                }
+                if (y > 0 && x > 0)
+                {
+                    // bottom left
+                    tile.Corners[3] = (mMap[x - 1][y - 1]);
+                }
+                if (y < Size.y - 1 && x > 0)
+                {
+                    // top left
+                    tile.Corners[0] = (mMap[x - 1][y + 1]);
                 }
             }
         }
@@ -233,7 +298,10 @@ public class Environment : MonoBehaviour
                         {
                             EnvironmentTile neighbour = currentNode.Connections[count];
 
-                            if (!neighbour.Visited && neighbour.IsAccessible)
+                            if (neighbour == null)
+                                continue;
+
+                            if (!neighbour.Visited && neighbour.State == EnvironmentTile.TileState.None)
                             {
                                 mToBeTested.Add(neighbour);
                             }
@@ -284,7 +352,18 @@ public class Environment : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Cannot find path for invalid nodes");
+            if (begin == null && destination == null)
+            {
+                Debug.LogWarning("Cannot find path for invalid nodes");
+            }
+            else if (begin == null)
+            {
+                Debug.LogWarning("Cannot find path for invalid start node");
+            }
+            else if (destination == null)
+            {
+                Debug.LogWarning("Cannot find path for invalid destination node");
+            }
         }
 
         mLastSolution = result;
