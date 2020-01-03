@@ -335,7 +335,7 @@ public class Environment : MonoBehaviour
                     result.Add(routeNode);
                     result.Reverse();
 
-                    Debug.LogFormat("Path Found: {0} steps {1} long", result.Count, destination.Local);
+                    // Debug.LogFormat("Path Found: {0} steps {1} long", result.Count, destination.Local);
                 }
                 else
                 {
@@ -347,7 +347,7 @@ public class Environment : MonoBehaviour
                 result = new List<EnvironmentTile>();
                 result.Add(begin);
                 result.Add(destination);
-                Debug.LogFormat("Direct Connection: {0} <-> {1} {2} long", begin, destination, TileSize);
+                // Debug.LogFormat("Direct Connection: {0} <-> {1} {2} long", begin, destination, TileSize);
             }
         }
         else

@@ -68,7 +68,7 @@ public class StatBar : MonoBehaviour
                     // add pieces
                     GameObject g = Instantiate((GameObject)Resources.Load("UI/StatBar"));
                     g.transform.SetParent(transform, false);
-                    g.transform.SetSiblingIndex(3);
+                    g.transform.SetSiblingIndex(2);
                     pieces.Insert(1, g);
                 }
             }
@@ -85,24 +85,24 @@ public class StatBar : MonoBehaviour
                     // set the sprite to either 0, or 1 if the player's health is lower than
                     // or equal to the value of i.
                     // this switches it between either the full or empty sprite in one line.
-                    im.sprite = sprites[value > i ? 5 : 4];
+                    im.sprite = sprites[2];
                 }
                 else
                 {
                     // we do the same here, except we use different sprites as this is the start
                     // of the bar, rather than a single piece.
-                    im.sprite = sprites[value > i ? 7 : 6];
+                    im.sprite = sprites[3];
                 }
             }
             else if (i == pieces.Count - 1)
             {
                 // end of the bar
-                im.sprite = sprites[value > i ? 1 : 0];
+                im.sprite = sprites[0];
             }
             else
             {
                 // middle sections of the bar
-                im.sprite = sprites[value > i ? 3 : 2];
+                im.sprite = sprites[1];
             }
 
             if (value > i)

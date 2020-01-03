@@ -21,7 +21,7 @@ public class Game : MonoBehaviour
 
     private RaycastHit[] mRaycastHits;
     private Character mCharacter;
-
+    
     private readonly int NumberOfRaycastHits = 1;
 
     private void Awake()
@@ -55,14 +55,9 @@ public class Game : MonoBehaviour
                 mCharacter.targetTile = tile;
             }
 
-            // Check to see if the player has clicked a tile and if they have, try to find a path to that 
-            // tile. If we find a path then the character will move along it to the clicked tile. 
-            if (Input.GetMouseButtonDown(0) &&mCharacter.possibleMoves.Contains(mCharacter.targetTile) && mCharacter.stamina > 0)
+            if (Input.GetMouseButtonDown(0) && CurrentTurn >= 0)
             {
-                List<EnvironmentTile> route = Environment.instance.Solve(mCharacter.currentPosition, mCharacter.targetTile);
-                mCharacter.GoTo(route);
-
-                mCharacter.stamina--;
+                mCharacter.UseCurrentAbility();
             }
         }
     }
@@ -79,6 +74,7 @@ public class Game : MonoBehaviour
                 mCharacter.transform.position = CharacterStart.position;
                 mCharacter.transform.rotation = CharacterStart.rotation;
                 Environment.instance.CleanUpWorld();
+                CurrentTurn = -1;
             }
             else
             {
@@ -89,7 +85,8 @@ public class Game : MonoBehaviour
                 Environment.instance.Start.Occupier = mCharacter.gameObject;
                 Environment.instance.Start.State = EnvironmentTile.TileState.Player;
 
-                mCharacter.FindPossibleMoves();
+                CurrentTurn = 0;
+                mCharacter.Init();
             }
         }
     }
@@ -120,7 +117,5 @@ public class Game : MonoBehaviour
 
         IsTurnRunning = false;
         CurrentTurn++;
-
-        mCharacter.FindPossibleMoves();
     }
 }

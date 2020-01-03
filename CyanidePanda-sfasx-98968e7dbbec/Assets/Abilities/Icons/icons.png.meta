@@ -1,46 +1,37 @@
 fileFormatVersion: 2
-guid: a6a1be10670420c43862c14387f116a8
+guid: 572e94f2ad6ece64b9811d88f0cf3701
 TextureImporter:
   internalIDToNameTable:
   - first:
+      213: -5785304796264791585
+    second: icon_move
+  - first:
+      213: 2308765580234064941
+    second: icon_sword
+  - first:
+      213: 7448635483698432202
+    second: icon_shield
+  - first:
+      213: -5542615223354024016
+    second: icon_bow
+  - first:
       213: 3300831919072558286
-    second: bar_start
+    second: icon_heart
   - first:
-      213: -791189481007253295
-    second: icon_stamina
+      213: -8416950437295798436
+    second: icon_potion_empty
   - first:
-      213: 117773925278870697
-    second: bar_start_full
+      213: 2896469036976350132
+    second: icon_potion_health
   - first:
-      213: -788037988540739174
-    second: bar_middle_full
+      213: -3400248774041431410
+    second: icon_potion_stamina
   - first:
-      213: -173906805033435690
-    second: bar_end_full
+      213: 5386886006037257603
+    second: icon_bag
   - first:
-      213: -6746367686589641343
-    second: bar_start_empty
-  - first:
-      213: 8394694109237234942
-    second: bar_middle_empty
-  - first:
-      213: -7110513386032658172
-    second: bar_end_empty
-  - first:
-      213: 7018285327229039891
-    second: bar_single_full
-  - first:
-      213: -292427576305175654
-    second: bar_single_empty
-  - first:
-      213: -6918325038130891975
-    second: bar_middle
-  - first:
-      213: 1461294329308149279
-    second: bar_end
-  - first:
-      213: -5263877433799609513
-    second: bar_single
+      213: 5780866380454994395
+    second: icon_battery
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -104,7 +95,7 @@ TextureImporter:
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
-    crunchedCompression: 0
+    crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
@@ -116,7 +107,7 @@ TextureImporter:
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
-    crunchedCompression: 0
+    crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
@@ -128,7 +119,7 @@ TextureImporter:
     textureFormat: -1
     textureCompression: 0
     compressionQuality: 50
-    crunchedCompression: 0
+    crunchedCompression: 1
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
@@ -137,11 +128,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: bar_start
+      name: icon_move
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 32
         width: 16
         height: 16
       alignment: 0
@@ -151,14 +142,182 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 75af9487328ac964791681be07002e40
+      spriteID: 3c783c5b70fd7494f82f99dcd5f56c57
+      internalID: -5785304796264791585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_sword
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 32
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 938a393766dbbcc4ca7e6eeb008cce1b
+      internalID: 2308765580234064941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_shield
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 32
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4abb7d5b53aada428549f5b9f17325e
+      internalID: 7448635483698432202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_bow
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 32
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ff9af90446ca7449b881d33b036db9a
+      internalID: -5542615223354024016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_heart
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4dcf62dd582d71441850727817691a40
       internalID: 3300831919072558286
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: bar_middle
+      name: icon_potion_empty
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92d4e41075d9fc84f8c1eb12225bee5b
+      internalID: -8416950437295798436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_potion_health
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b00fd37be37879e4482b029970d55376
+      internalID: 2896469036976350132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_potion_stamina
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57465d28241b5e24aa54d28df7af71f8
+      internalID: -3400248774041431410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_bag
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 504b18c1112552b43ac6bfeec9a85be9
+      internalID: 5386886006037257603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: icon_battery
       rect:
         serializedVersion: 2
         x: 16
@@ -172,50 +331,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 09f3291a23bfc854d81586084d53b343
-      internalID: -6918325038130891975
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: bar_end
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 0
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: de79c646f5f53b947be51d5b2ff5fc54
-      internalID: 1461294329308149279
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: bar_single
-      rect:
-        serializedVersion: 2
-        x: 48
-        y: 0
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b7e3e8789810d84429bba0c99d778efd
-      internalID: -5263877433799609513
+      spriteID: 3704f391927d9484782184c38044202d
+      internalID: 5780866380454994395
       vertices: []
       indices: 
       edges: []

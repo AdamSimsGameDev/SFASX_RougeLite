@@ -12,7 +12,6 @@ public class BorderVisualiser : MonoBehaviour
     public Material material;
     public Material transparent;
 
-    public EnvironmentTile[] tiles;
     public Color color;
 
     private void Awake()
@@ -20,7 +19,12 @@ public class BorderVisualiser : MonoBehaviour
         instance = this;
     }
 
-    public void Generate (List<EnvironmentTile> newTiles)
+    public static void Visualise(List<EnvironmentTile> tiles, Color color)
+    {
+        instance.color = color;
+        instance.Visualise(tiles);
+    }
+    public void Visualise (List<EnvironmentTile> tiles)
     {
         material.color = color;
         transparent.color = new Color(color.r, color.g, color.b, 0.25F);
@@ -35,15 +39,15 @@ public class BorderVisualiser : MonoBehaviour
         }
 
         // create the new ones
-        for(int i = 0; i < newTiles.Count; i++)
+        for(int i = 0; i < tiles.Count; i++)
         {
-            Vector3 position = newTiles[i].transform.position + new Vector3(5.0F, 2.5F, 5.0F);
+            Vector3 position = tiles[i].transform.position + new Vector3(5.0F, 2.5F, 5.0F);
 
             // find out what DEC value it is
             int dec = 0;
             for (int j = 0; j < 4; j++)
             {
-                if (newTiles.Contains(newTiles[i].Connections[j]))
+                if (tiles.Contains(tiles[i].Connections[j]))
                     dec += (int)Mathf.Pow(2, j);
             }
 
@@ -57,7 +61,7 @@ public class BorderVisualiser : MonoBehaviour
             // create any additional corners that may be needed
             for (int j = 0; j < 4; j++)
             {
-                if (!newTiles.Contains(newTiles[i].Corners[j]))
+                if (!tiles.Contains(tiles[i].Corners[j]))
                 {
                     GameObject c = Instantiate(cornerPrefab);
                     c.transform.position = position;
@@ -67,7 +71,17 @@ public class BorderVisualiser : MonoBehaviour
                 }
             }
         }
+    }
 
-        tiles = newTiles.ToArray();
+    public static void Clear()
+    {
+        // remove the old borders
+        Transform[] children = instance.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < children.Length; i++)
+        {
+            if (children[i] == instance.transform)
+                continue;
+            Destroy(children[i].gameObject);
+        }
     }
 }

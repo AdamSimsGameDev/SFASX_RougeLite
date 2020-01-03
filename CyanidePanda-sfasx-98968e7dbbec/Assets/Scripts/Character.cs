@@ -13,43 +13,17 @@ public class Character : MonoBehaviour
     public int stamina;
     public int maxStamina;
 
-    // possible move locations
-    public List<EnvironmentTile> possibleMoves = new List<EnvironmentTile>();
-
     // the characters current position
-    public EnvironmentTile currentPosition
-    {
-        get
-        {
-            return CurrentPosition;
-        }
-        set
-        {
-            CurrentPosition = value;
-            if (IsMoving == false)
-                pathVisualiser.current = value;
-        }
-    }
-    private EnvironmentTile CurrentPosition;
+    public EnvironmentTile currentPosition { get; set; }
 
     // the destination that the character is currently looking at pathing towards.
-    public EnvironmentTile targetTile
-    {
-        get
-        {
-            return TargetTile;
-        }
-        set
-        {
-            SetDestination(value);
-        }
-    }
-    private EnvironmentTile TargetTile;
-
+    public EnvironmentTile targetTile { get; set; }
     // the previous destination that the character was looking at pathing towards.
     private EnvironmentTile lastTargetTile { get; set; }
 
     public bool IsMoving { get; set; }
+
+    private Ability currentAbility;
 
     // the path visualiser attached to this character
     public PathVisualiser pathVisualiser;
@@ -58,63 +32,44 @@ public class Character : MonoBehaviour
     {
         pathVisualiser = Instantiate((GameObject)Resources.Load("PathVisualiser")).GetComponent<PathVisualiser>();
     }
-
-    private void SetDestination (EnvironmentTile destination)
+    public void Init()
     {
-        // compare the new destination to the last tile
-        if (destination != lastTargetTile)
-        {
-            // if they aren't the same we want to update them
-            lastTargetTile = destination;
-            TargetTile = destination;
+        pathVisualiser.current = currentPosition;
 
-            // we also need to set the path visualisers destination.
-            pathVisualiser.destination = targetTile;
-            pathVisualiser.DoUpdate(possibleMoves);
+        currentAbility = new AbilityMove();
+        currentAbility.Init(this);
+    }
+    private void Update()
+    {
+        // if the character is now looking at a different tile, revisualise the ability
+        if (targetTile != lastTargetTile)
+        {
+            if (currentAbility != null) currentAbility.Visualise(targetTile);
+            lastTargetTile = targetTile;
         }
     }
 
-    public void FindPossibleMoves ()
+    public void UseCurrentAbility ()
     {
-        possibleMoves.Clear();
-
-        // temporary range variable.
-        int range = 3;
-
-        for (int i = -range; i < range + 1; i++)
+        if (stamina >= currentAbility.staminaCost && !currentAbility.isCooldown)
         {
-            for (int j = -range; j < range + 1; j++)
+            if (currentAbility.Use(targetTile))
             {
-                Vector2Int target = currentPosition.GridPosition + new Vector2Int(i, j);
-                if (Vector2.Distance(currentPosition.GridPosition, target) <= range)
-                {
-                    EnvironmentTile tile = Environment.instance.GetTile(target.x, target.y);
-                    if (tile != null)
-                    {
-                        // if we can path to that tile, or the tile is our own
-                        if (tile.State == EnvironmentTile.TileState.None)
-                        {
-                            List<EnvironmentTile> path = Environment.instance.Solve(currentPosition, tile);
-                            // ensure that we can reach exists and that tile within the given number of steps.
-                            if (path != null)
-                            {
-                                if (path.Count <= range + 1)
-                                {
-                                    possibleMoves.Add(tile);
-                                }
-                            }
-                        }
-                        else if (tile.Occupier == gameObject)
-                        {
-                            possibleMoves.Add(tile);
-                        }
-                    }
-                }
+                stamina -= currentAbility.staminaCost;
+
+                SetCurrentAbility(-1);
             }
         }
+    }
+    public void SetCurrentAbility (int ability)
+    {
+        currentAbility.ClearVisualisation();
+        currentAbility = null;
 
-        BorderVisualiser.instance.color = Color.blue;
-        BorderVisualiser.instance.Generate(possibleMoves);
+        if (ability == -1)
+            return;
+        
+        // currentAbility = abilities[ability];
     }
 
     private IEnumerator DoMove(Vector3 position, Vector3 destination)
@@ -169,12 +124,8 @@ public class Character : MonoBehaviour
             IsMoving = false;
         }
 
-        // temporary
-        FindPossibleMoves();
-
         // update the path visualiser's current position
         pathVisualiser.current = currentPosition;
-        pathVisualiser.DoUpdate(possibleMoves);
     }
     public void GoTo(List<EnvironmentTile> route)
     {

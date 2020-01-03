@@ -48,5 +48,6 @@ MonoBehaviour:
   - {fileID: 6226228243418220439, guid: 88031231e8487b04ba216ee7e5a2cf75, type: 3}
   - {fileID: 5850799433499549640, guid: 28e50eea638679046abb2b8a650c5d49, type: 3}
   - {fileID: 8861525499375423597, guid: 542a749467b11ce4cbdac1b3217626a0, type: 3}
+  - {fileID: 1812585447700905888, guid: 32885560aebdfda46b932239e0106be9, type: 3}
   accessible: {fileID: 2100000, guid: a2bfbb2531a454c47ab0b4c818db7069, type: 2}
   inaccessible: {fileID: 2100000, guid: f154973cc234fd64a97fa3999c12eb75, type: 2}

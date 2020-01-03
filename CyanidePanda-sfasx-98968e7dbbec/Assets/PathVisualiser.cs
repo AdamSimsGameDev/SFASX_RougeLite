@@ -12,34 +12,9 @@ public class PathVisualiser : MonoBehaviour
     private Dictionary<EnvironmentTile, GameObject> pathTiles = new Dictionary<EnvironmentTile, GameObject>();
 
     // the character's current position
-    public EnvironmentTile current
-    {
-        get
-        {
-            return Current;
-        }
-        set
-        {
-            Current = value;
-        }
-    }
-    private EnvironmentTile Current;
+    public EnvironmentTile current { get; set; }
 
-    // the character's destination
-    public EnvironmentTile destination
-    {
-        get
-        {
-            return Destination;
-        }
-        set
-        {
-            Destination = value;
-        }
-    }
-    private EnvironmentTile Destination;
-
-    public void DoUpdate (List<EnvironmentTile> possibleMoves)
+    public void DoUpdate (EnvironmentTile target, List<EnvironmentTile> possibleTiles)
     {
         // destroy the pre-existing path
         Transform[] children = GetComponentsInChildren<Transform>();
@@ -54,11 +29,11 @@ public class PathVisualiser : MonoBehaviour
         pathTiles.Clear();
 
         // ensure that the destination and current position actually exist
-        if (Destination == null || Current == null)
+        if (target == null || current == null)
             return;
 
         // get the path between the current position and the destination.
-        List<EnvironmentTile> path = Environment.instance.Solve(current, destination);
+        List<EnvironmentTile> path = Environment.instance.Solve(current, target);
 
         // ensure that the path exists
         if (path == null)
@@ -68,7 +43,7 @@ public class PathVisualiser : MonoBehaviour
         for (int i = 0; i < path.Count; i++)
         {
             EnvironmentTile e = path[i];
-            Vector3 position = e.transform.position + new Vector3(5.0F, 2.3F, 5.0F);
+            Vector3 position = e.transform.position + new Vector3(5.0F, 2.5F, 5.0F);
 
             int lastDirection = -1;
             int nextDirection = -1;
@@ -98,7 +73,7 @@ public class PathVisualiser : MonoBehaviour
             {
                 // do nothing
             }
-            else if (e == destination)
+            else if (e == target)
             {
                 int inverseDirection = -1;
                 switch(lastDirection)
@@ -118,7 +93,7 @@ public class PathVisualiser : MonoBehaviour
                 }
 
                 // end of the path
-                g = Instantiate(prefabs[1]);
+                g = Instantiate(prefabs[possibleTiles.Contains(path[i]) ? 1 : 4]);
                 g.transform.position = position;
                 g.transform.parent = transform;
                 g.transform.Rotate(Vector3.up * 90.0F * inverseDirection);
@@ -158,7 +133,7 @@ public class PathVisualiser : MonoBehaviour
 
             if (g != null)
             {
-                if (possibleMoves.Contains(path[i]))
+                if (possibleTiles.Contains(path[i]))
                     g.GetComponent<Renderer>().sharedMaterial = accessible;
                 else
                     g.GetComponent<Renderer>().sharedMaterial = inaccessible;
@@ -176,4 +151,20 @@ public class PathVisualiser : MonoBehaviour
             pathTiles.Remove(tile);
         }
     }
+
+    public void Clear()
+    {
+        // destroy the pre-existing path
+        Transform[] children = GetComponentsInChildren<Transform>();
+        for (int i = 0; i < children.Length; i++)
+        {
+            if (children[i] == transform)
+                continue;
+            Destroy(children[i].gameObject);
+        }
+
+        // clear the previous tile dictionary
+        pathTiles.Clear();
+    }
+
 }
