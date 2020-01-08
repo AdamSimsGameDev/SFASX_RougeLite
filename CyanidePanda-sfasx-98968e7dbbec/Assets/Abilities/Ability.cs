@@ -5,10 +5,17 @@ using UnityEngine;
 [System.Serializable]
 public abstract class Ability
 {
+    public static Dictionary<string, Ability> abilities = new Dictionary<string, Ability>()
+    {
+        { "move", new AbilityMove() }
+    };
+
     public int currentCooldown;
 
     public abstract int maxCooldown { get; }
     public abstract int staminaCost { get; }
+
+    public abstract bool canUseOnSelf { get; }
 
     public bool isCooldown { get { return currentCooldown != 0; } }
 

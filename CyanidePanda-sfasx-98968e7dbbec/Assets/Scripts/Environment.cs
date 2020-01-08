@@ -9,7 +9,8 @@ public class Environment : MonoBehaviour
     [SerializeField] private List<EnvironmentTile> AccessibleTiles;
     [SerializeField] private List<EnvironmentTile> InaccessibleTiles;
     [SerializeField] private float AccessiblePercentage;
-    [SerializeField] private Vector2Int Size;
+
+    public Vector2Int Size;
 
     private EnvironmentTile[][] mMap;
     private List<EnvironmentTile> mAll;

@@ -6,6 +6,7 @@ public class AbilityMove : Ability
 {
     public override int maxCooldown => 1;
     public override int staminaCost => 1;
+    public override bool canUseOnSelf => false;
 
     // calculate the possible tiles on the initialization of this ability.
     public override void Init(Character player)
@@ -53,7 +54,7 @@ public class AbilityMove : Ability
     // when the ability is used, check location and then path if possible.
     public override bool Use(EnvironmentTile targetTile)
     {
-        if (tiles.Contains(targetTile))
+        if (tiles.Contains(targetTile) && targetTile != player.currentPosition)
         {
             List<EnvironmentTile> route = Environment.instance.Solve(player.currentPosition, player.targetTile);
             player.GoTo(route);
@@ -79,6 +80,7 @@ public class AbilityMove : Ability
         player.pathVisualiser.DoUpdate(targetTile, tiles);
     }
 
+    // clears the visualisation of the path and border
     public override void ClearVisualisation()
     {
         BorderVisualiser.Clear();

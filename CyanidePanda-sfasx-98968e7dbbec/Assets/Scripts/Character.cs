@@ -23,7 +23,8 @@ public class Character : MonoBehaviour
 
     public bool IsMoving { get; set; }
 
-    private Ability currentAbility;
+    public string currentAbility;
+    public Dictionary<string, Ability> abilities = new Dictionary<string, Ability>();
 
     // the path visualiser attached to this character
     public PathVisualiser pathVisualiser;
@@ -32,44 +33,84 @@ public class Character : MonoBehaviour
     {
         pathVisualiser = Instantiate((GameObject)Resources.Load("PathVisualiser")).GetComponent<PathVisualiser>();
     }
-    public void Init()
-    {
-        pathVisualiser.current = currentPosition;
-
-        currentAbility = new AbilityMove();
-        currentAbility.Init(this);
-    }
     private void Update()
     {
         // if the character is now looking at a different tile, revisualise the ability
         if (targetTile != lastTargetTile)
         {
-            if (currentAbility != null) currentAbility.Visualise(targetTile);
+            if (currentAbility != "" && stamina >= abilities[currentAbility].staminaCost && !abilities[currentAbility].isCooldown)
+                abilities[currentAbility].Visualise(targetTile);
             lastTargetTile = targetTile;
+        }
+    }
+
+    public void Init()
+    {
+        pathVisualiser.current = currentPosition;
+
+        abilities.Add("move", Ability.abilities["move"]);
+        foreach(KeyValuePair<string, Ability> kvp in abilities)
+        {
+            kvp.Value.Init(this);
         }
     }
 
     public void UseCurrentAbility ()
     {
-        if (stamina >= currentAbility.staminaCost && !currentAbility.isCooldown)
-        {
-            if (currentAbility.Use(targetTile))
-            {
-                stamina -= currentAbility.staminaCost;
+        if (currentAbility == "")
+            return;
 
-                SetCurrentAbility(-1);
+        if (stamina >= abilities[currentAbility].staminaCost && !abilities[currentAbility].isCooldown)
+        {
+            if (abilities[currentAbility].Use(targetTile))
+            {
+                stamina -= abilities[currentAbility].staminaCost;
+                SetCurrentAbility("");
+                // set the current menu to the previous menu
+                Game.ui.ReturnToPreviousMenu();
             }
         }
     }
-    public void SetCurrentAbility (int ability)
+    public void SetCurrentAbility (string ability)
     {
-        currentAbility.ClearVisualisation();
-        currentAbility = null;
+        // if the last ability wasn't null, clear it's visualisation
+        if (currentAbility != "")
+            abilities[currentAbility].ClearVisualisation();
 
-        if (ability == -1)
-            return;
-        
-        // currentAbility = abilities[ability];
+        // if the new ability isn't null we need to do a few checks
+        if (ability != "")
+        {
+            // if the ability is on cooldown however we don't want the player to be able to use it.
+            if (abilities[ability].isCooldown)
+                return;
+            // the same applies if the player doesn't have enough stamina
+            if (stamina < abilities[ability].staminaCost)
+                return;
+        }
+        // if neither of these are true we set the current ability.
+        currentAbility = ability;
+
+        // set the visualisation
+        if (currentAbility != "")
+        {
+            abilities[currentAbility].Visualise(targetTile);
+        }
+    }
+
+    public void EndTurn()
+    {
+        stamina = maxStamina;
+
+        foreach(KeyValuePair<string, Ability> kvp in abilities)
+        {
+            Ability ab = kvp.Value;
+
+            ab.EndTurn();
+            ab.Init(this);
+        }
+
+        // reset the menu to the basic action menu
+        Game.ui.SetCurrentMenu("actionsMenu");
     }
 
     private IEnumerator DoMove(Vector3 position, Vector3 destination)

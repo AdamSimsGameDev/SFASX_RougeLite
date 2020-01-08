@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 public class Game : MonoBehaviour
 {
     public static Game instance;
+    public static Character character;
+    public static GameUI ui;
 
     [SerializeField] private Camera MainCamera;
     [SerializeField] private Character Character;
@@ -15,12 +17,10 @@ public class Game : MonoBehaviour
 
     public bool IsTurnRunning;
     public int CurrentTurn;
-    [Space]
-    public StatBar healthBar;
-    public StatBar staminaBar;
+
+    public CameraControls player;
 
     private RaycastHit[] mRaycastHits;
-    private Character mCharacter;
     
     private readonly int NumberOfRaycastHits = 1;
 
@@ -29,35 +29,40 @@ public class Game : MonoBehaviour
         if (instance != null)
             Destroy(gameObject);
         instance = this;
+
+        ui = GetComponent<GameUI>();
     }
     private void Start()
     {
         mRaycastHits = new RaycastHit[NumberOfRaycastHits];
-        mCharacter = Instantiate(Character, transform); 
+        character = Instantiate(Character, transform); 
         ShowMenu(true);
     }
 
     private void Update()
     {
-        healthBar.value = mCharacter.health;
-        healthBar.maxValue = mCharacter.maxHealth;
-
-        staminaBar.value = mCharacter.stamina;
-        staminaBar.maxValue = mCharacter.maxStamina;
-
-        if (!mCharacter.IsMoving)
+        if (!character.IsMoving)
         {
             Ray screenClick = MainCamera.ScreenPointToRay(Input.mousePosition);
             int hits = Physics.RaycastNonAlloc(screenClick, mRaycastHits);
             if (hits > 0)
             {
                 EnvironmentTile tile = mRaycastHits[0].transform.GetComponent<EnvironmentTile>();
-                mCharacter.targetTile = tile;
+                character.targetTile = tile;
+            }
+            else
+            {
+                character.targetTile = null;
+            }
+
+            if (character.targetTile == null)
+            {
+                character.targetTile = character.currentPosition;
             }
 
             if (Input.GetMouseButtonDown(0) && CurrentTurn >= 0)
             {
-                mCharacter.UseCurrentAbility();
+                character.UseCurrentAbility();
             }
         }
     }
@@ -71,22 +76,24 @@ public class Game : MonoBehaviour
 
             if( show )
             {
-                mCharacter.transform.position = CharacterStart.position;
-                mCharacter.transform.rotation = CharacterStart.rotation;
+                character.transform.position = CharacterStart.position;
+                character.transform.rotation = CharacterStart.rotation;
                 Environment.instance.CleanUpWorld();
                 CurrentTurn = -1;
             }
             else
             {
-                mCharacter.transform.position = Environment.instance.Start.Position;
-                mCharacter.transform.rotation = Quaternion.identity;
-                mCharacter.currentPosition = Environment.instance.Start;
+                character.transform.position = Environment.instance.Start.Position;
+                character.transform.rotation = Quaternion.identity;
+                character.currentPosition = Environment.instance.Start;
 
-                Environment.instance.Start.Occupier = mCharacter.gameObject;
+                Environment.instance.Start.Occupier = character.gameObject;
                 Environment.instance.Start.State = EnvironmentTile.TileState.Player;
 
                 CurrentTurn = 0;
-                mCharacter.Init();
+                character.Init();
+
+                player.MoveToPosition(character.transform.position);
             }
         }
     }
@@ -103,13 +110,17 @@ public class Game : MonoBehaviour
 #endif
     }
 
-    // turn system
-    public void NextTurn()
+    public void SetPlayerAbility (string ability)
     {
-        StartCoroutine(DoNextTurn());
+        character.SetCurrentAbility(ability);
     }
 
-    private IEnumerator DoNextTurn ()
+    // turn system
+    public void EndTurn()
+    {
+        StartCoroutine(ProcessTurn());
+    }
+    private IEnumerator ProcessTurn ()
     {
         IsTurnRunning = true;
 
@@ -117,5 +128,8 @@ public class Game : MonoBehaviour
 
         IsTurnRunning = false;
         CurrentTurn++;
+
+        character.EndTurn();
+        ui.EndTurn();
     }
 }
