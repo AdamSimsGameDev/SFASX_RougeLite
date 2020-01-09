@@ -38,8 +38,13 @@ public class Character : MonoBehaviour
         // if the character is now looking at a different tile, revisualise the ability
         if (targetTile != lastTargetTile)
         {
-            if (currentAbility != "" && stamina >= abilities[currentAbility].staminaCost && !abilities[currentAbility].isCooldown)
-                abilities[currentAbility].Visualise(targetTile);
+            if (currentAbility != "")
+            {
+                if (stamina >= abilities[currentAbility].staminaCost && !abilities[currentAbility].isCooldown)
+                {
+                    abilities[currentAbility].Visualise(targetTile);
+                }
+            }
             lastTargetTile = targetTile;
         }
     }
