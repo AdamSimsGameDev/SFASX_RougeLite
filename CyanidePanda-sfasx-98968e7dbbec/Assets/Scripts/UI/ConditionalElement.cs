@@ -8,6 +8,7 @@ public abstract class ConditionalElement : MenuElement
     public enum HiddenType { Hidden, Stricken }
     public HiddenType hiddenType;
     public GameObject strickenObject;
+    public bool isInteractable = true;
 
     public abstract void UpdateVisuals();
 }

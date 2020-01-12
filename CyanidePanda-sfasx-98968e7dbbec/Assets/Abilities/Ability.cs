@@ -7,7 +7,8 @@ public abstract class Ability
 {
     public static Dictionary<string, Ability> abilities = new Dictionary<string, Ability>()
     {
-        { "move", new AbilityMove() }
+        { "move", new AbilityMove() },
+        { "basic_attack", new AbilityBasicAttack() }
     };
 
     public int currentCooldown;

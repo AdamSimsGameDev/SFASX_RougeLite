@@ -69,10 +69,14 @@ public class GameUI : MonoBehaviour
             }
         }
 
-        // set the new menu's element to 0.
-        menuDict[ID].SetElement(0);
-        // update the current menu's visuals
-        menuDict[ID].UpdateMenuVisuals();
+        // check to see if the new menu exists
+        if (ID != "")
+        {
+            // set the new menu's element to 0.
+            menuDict[ID].SetElement(0);
+            // update the current menu's visuals
+            menuDict[ID].UpdateMenuVisuals();
+        }
     }
     public void ReturnToPreviousMenu()
     {

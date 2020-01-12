@@ -21,7 +21,7 @@ public class Environment : MonoBehaviour
     private const float TileSize = 10.0f;
     private const float TileHeight = 2.5f;
 
-    public EnvironmentTile Start { get; private set; }
+    public EnvironmentTile StartTile { get; private set; }
 
     private void Awake()
     {
@@ -110,7 +110,7 @@ public class Environment : MonoBehaviour
         int halfWidth = Size.x / 2;
         int halfHeight = Size.y / 2;
         Vector3 position = new Vector3( -(halfWidth * TileSize) - (Size.x % 2 == 1 ? TileSize / 2 : 0.0F), 0.0f, -(halfHeight * TileSize) - (Size.y % 2 == 1 ? TileSize / 2 : 0.0F));
-        bool start = true;
+        bool start = false;
 
         for ( int x = 0; x < Size.x; ++x)
         {
@@ -118,6 +118,8 @@ public class Environment : MonoBehaviour
 
             for ( int y = 0; y < Size.y; ++y)
             {
+                start = halfWidth == x && halfHeight == y;
+
                 bool isAccessible = start || Random.value < AccessiblePercentage;
                 List<EnvironmentTile> tiles = isAccessible ? AccessibleTiles : InaccessibleTiles;
                 EnvironmentTile prefab = tiles[Random.Range(0, tiles.Count)];
@@ -131,7 +133,7 @@ public class Environment : MonoBehaviour
 
                 if(start)
                 {
-                    Start = tile;
+                    StartTile = tile;
                 }
 
                 position.z += TileSize;
@@ -142,7 +144,6 @@ public class Environment : MonoBehaviour
             position.z = -(halfHeight * TileSize) - (Size.y % 2 == 1 ? TileSize / 2 : 0.0F);
         }
     }
-
     private void SetupConnections()
     {
         // Currently we are only setting up connections between adjacnt nodes
@@ -207,7 +208,6 @@ public class Environment : MonoBehaviour
             }
         }
     }
-
     private float Distance(EnvironmentTile a, EnvironmentTile b)
     {
         // Use the length of the connection between these two nodes to find the distance, this 
@@ -220,7 +220,6 @@ public class Environment : MonoBehaviour
         }
         return result;
     }
-
     private float Heuristic(EnvironmentTile a, EnvironmentTile b)
     {
         // Use the locations of the node to estimate how close they are by line of sight
@@ -228,13 +227,11 @@ public class Environment : MonoBehaviour
         // calculate the global goal and work out the best order to prossess nodes in
         return Vector3.Distance(a.Position, b.Position);
     }
-
     public void GenerateWorld()
     {
         Generate();
         SetupConnections();
     }
-
     public void CleanUpWorld()
     {
         if (mMap != null)
@@ -247,6 +244,21 @@ public class Environment : MonoBehaviour
                 }
             }
         }
+    }
+
+    public List<EnvironmentTile> GetAllTilesOfType(EnvironmentTile.TileState state)
+    {
+        List<EnvironmentTile> tiles = new List<EnvironmentTile>();
+
+        foreach(EnvironmentTile t in mAll)
+        {
+            if (t.State == state)
+            {
+                tiles.Add(t);
+            }
+        }
+
+        return tiles;
     }
 
     public List<EnvironmentTile> Solve(EnvironmentTile begin, EnvironmentTile destination)

@@ -28,12 +28,16 @@ public class AbilityElement : ConditionalElement
                             strickenObject.SetActive(true);
                             break;
                     }
+                    // set interactability to false
+                    isInteractable = false;
                 }
                 else
                 {
                     // we can use the ability.
                     gameObject.SetActive(true);
                     strickenObject.SetActive(false);
+                    // set interactability to true
+                    isInteractable = true;
                 }
             }
             else

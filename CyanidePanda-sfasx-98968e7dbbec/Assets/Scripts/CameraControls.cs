@@ -15,7 +15,7 @@ public class CameraControls : MonoBehaviour
 
     private void Update()
     {
-        if (Game.character.currentAbility == "")
+        if (Game.character.currentAbility == "" && !Game.instance.isFreeLooking)
             return;
 
         Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0.0F, Input.GetAxis("Vertical"));

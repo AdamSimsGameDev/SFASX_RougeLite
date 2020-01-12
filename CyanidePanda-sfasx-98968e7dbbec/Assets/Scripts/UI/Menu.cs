@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Menu : MonoBehaviour
 {
@@ -24,6 +25,9 @@ public class Menu : MonoBehaviour
     // whether the menu will be disabled graphically when it isn't in use
     public bool disableWhenInactive = false;
 
+    // the events that are ran when this menu is used with the back button.
+    public UnityEvent onBack;
+
     private void Start()
     {
         // we update the elements immediately to let the menu update once.
@@ -36,9 +40,8 @@ public class Menu : MonoBehaviour
         if (isActive == false)
             return;
 
-        // if the player presses the 'jump' button, activate the event on the current element
-        if (Input.GetButtonDown("Jump"))
-            selectionElements[currentElement].onUse.Invoke();
+        // handle button input
+        HandleButtonInput();
 
         /*
         // check to see if the player has an ability selected, if so we don't want them to have any further control of the menu.
@@ -83,6 +86,34 @@ public class Menu : MonoBehaviour
 
                 // we then update the elements to adjust to the new selection.
                 UpdateElements();
+            }
+        }
+    }
+
+    private void HandleButtonInput ()
+    {
+        // create a bool for whether this button can be used.
+        bool canInteract = true;
+
+        // test to see if the button is conditional.
+        if (selectionElements[currentElement] is ConditionalElement)
+        {
+            // if it is we need to see if it is unusable.
+            ConditionalElement conditional = selectionElements[currentElement] as ConditionalElement;
+            canInteract = conditional.isInteractable;
+        }
+
+        // only allow the button to be used if it is active.
+        if (canInteract)
+        {
+            // if the player presses the 'jump' button, activate the event on the current element
+            if (Input.GetButtonDown("Use"))
+                selectionElements[currentElement].onUse.Invoke();
+            // if the player pushes the 'back' button, activate the event on the current element and this menu
+            if (Input.GetButtonDown("Back"))
+            {
+                onBack.Invoke();
+                selectionElements[currentElement].onBack.Invoke();
             }
         }
     }

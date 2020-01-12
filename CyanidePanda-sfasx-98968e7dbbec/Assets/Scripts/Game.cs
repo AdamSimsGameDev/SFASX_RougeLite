@@ -15,8 +15,11 @@ public class Game : MonoBehaviour
     [SerializeField] private Canvas Hud;
     [SerializeField] private Transform CharacterStart;
 
+    public bool IsPlaying;
     public bool IsTurnRunning;
     public int CurrentTurn;
+
+    public bool isFreeLooking;
 
     public CameraControls player;
 
@@ -38,31 +41,54 @@ public class Game : MonoBehaviour
         character = Instantiate(Character, transform); 
         ShowMenu(true);
     }
-
     private void Update()
     {
-        if (!character.IsMoving)
+        if (IsPlaying)
         {
-            Ray screenClick = MainCamera.ScreenPointToRay(Input.mousePosition);
-            int hits = Physics.RaycastNonAlloc(screenClick, mRaycastHits);
-            if (hits > 0)
+            if (!IsTurnRunning)
             {
-                EnvironmentTile tile = mRaycastHits[0].transform.GetComponent<EnvironmentTile>();
-                character.targetTile = tile;
-            }
-            else
-            {
-                character.targetTile = null;
+                if (Input.GetButtonDown("Look"))
+                {
+                    isFreeLooking = !isFreeLooking;
+
+                    if (isFreeLooking)
+                    {
+                        ui.SetCurrentMenu("");
+                    }
+                    else
+                    {
+                        ui.ReturnToPreviousMenu();
+                    }
+                }
             }
 
-            if (character.targetTile == null)
+            if (!character.IsMoving)
             {
-                character.targetTile = character.currentPosition;
-            }
+                /*Ray screenClick = MainCamera.ScreenPointToRay(Input.mousePosition);
+                int hits = Physics.RaycastNonAlloc(screenClick, mRaycastHits);
+                if (hits > 0)
+                {
+                    EnvironmentTile tile = mRaycastHits[0].transform.GetComponent<EnvironmentTile>();
+                    character.targetTile = tile;
+                }
+                else
+                {
+                    character.targetTile = null;
+                }*/
 
-            if (Input.GetMouseButtonDown(0) && CurrentTurn >= 0)
-            {
-                character.UseCurrentAbility();
+                int x = Mathf.RoundToInt(GameObject.Find("Cursor").transform.position.x / 10.0F) + Environment.instance.Size.x / 2;
+                int y = Mathf.RoundToInt(GameObject.Find("Cursor").transform.position.z / 10.0F) + Environment.instance.Size.y / 2;
+                character.targetTile = Environment.instance.GetTile(x, y);
+
+                if (character.targetTile == null)
+                {
+                    character.targetTile = character.currentPosition;
+                }
+
+                if (Input.GetButtonDown("Use") && CurrentTurn >= 0)
+                {
+                    character.UseCurrentAbility();
+                }
             }
         }
     }
@@ -80,20 +106,12 @@ public class Game : MonoBehaviour
                 character.transform.rotation = CharacterStart.rotation;
                 Environment.instance.CleanUpWorld();
                 CurrentTurn = -1;
+
+                IsPlaying = false;
             }
             else
             {
-                character.transform.position = Environment.instance.Start.Position;
-                character.transform.rotation = Quaternion.identity;
-                character.currentPosition = Environment.instance.Start;
-
-                Environment.instance.Start.Occupier = character.gameObject;
-                Environment.instance.Start.State = EnvironmentTile.TileState.Player;
-
-                CurrentTurn = 0;
-                character.Init();
-
-                player.MoveToPosition(character.transform.position);
+                StartGame();
             }
         }
     }
@@ -108,6 +126,24 @@ public class Game : MonoBehaviour
 #if !UNITY_EDITOR
         Application.Quit();
 #endif
+    }
+
+    private void StartGame ()
+    {
+        character.transform.position = Environment.instance.StartTile.Position;
+        character.transform.rotation = Quaternion.identity;
+        character.currentPosition = Environment.instance.StartTile;
+
+        Environment.instance.StartTile.Occupier = character.gameObject;
+        Environment.instance.StartTile.State = EnvironmentTile.TileState.Player;
+
+        CurrentTurn = 0;
+        character.Init();
+
+        player.MoveToPosition(character.transform.position);
+        EnemyManager.instance.Initialize(2);
+
+        IsPlaying = true;
     }
 
     public void SetPlayerAbility (string ability)

@@ -11,6 +11,8 @@ public class MenuElement : MonoBehaviour
     public bool isActive;
     // the events that are ran when this element is used
     public UnityEvent onUse;
+    // the events that are ran when this element is used with the back button.
+    public UnityEvent onBack;
 
     private void Start()
     {

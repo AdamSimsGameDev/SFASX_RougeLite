@@ -53,11 +53,18 @@ public class Character : MonoBehaviour
     {
         pathVisualiser.current = currentPosition;
 
-        abilities.Add("move", Ability.abilities["move"]);
-        foreach(KeyValuePair<string, Ability> kvp in abilities)
+        AddAbility("move");
+        AddAbility("basic_attack");
+
+        foreach (KeyValuePair<string, Ability> kvp in abilities)
         {
             kvp.Value.Init(this);
         }
+    }
+
+    public void AddAbility(string tag)
+    {
+        abilities.Add(tag, Ability.abilities[tag]);
     }
 
     public void UseCurrentAbility ()
@@ -168,6 +175,11 @@ public class Character : MonoBehaviour
             }
 
             IsMoving = false;
+
+            foreach (KeyValuePair<string, Ability> kvp in abilities)
+            {
+                kvp.Value.Init(this);
+            }
         }
 
         // update the path visualiser's current position
