@@ -13,17 +13,24 @@ public class AbilityBasicAttack : Ability
     {
         this.player = player;
 
+        // clear the existing tiles
         tiles.Clear();
 
+        // get all tiles in the map that contain an enemy.
         List<EnvironmentTile> enemyTiles = Environment.instance.GetAllTilesOfType(EnvironmentTile.TileState.Enemy);
 
+        // define the attack range
         int attackRange = 2;
 
+        // loop through the attack range on both the X and Y
         for (int i = -attackRange; i < attackRange + 1; i++)
         {
             for (int j = -attackRange; j < attackRange + 1; j++)
             {
+                // get the position based on the new x and y offsets
                 Vector2Int target = player.currentPosition.GridPosition + new Vector2Int(i, j);
+                // if the distance is equal to or less than the attack range we can add that tile.
+                // we do this to ensure that the attack range is circular.
                 if (Vector2.Distance(player.currentPosition.GridPosition, target) <= attackRange)
                 {
                     EnvironmentTile tile = Environment.instance.GetTile(target.x, target.y);
@@ -43,7 +50,10 @@ public class AbilityBasicAttack : Ability
             currentCooldown = maxCooldown;
 
             player.transform.rotation = Quaternion.LookRotation(targetTile.Position - player.currentPosition.Position, Vector3.up);
-            targetTile.Occupier.GetComponent<Enemy>().Damage(1); // replace 1 in future with weapon damage
+
+            Enemy enemy = targetTile.Occupier.GetComponent<Enemy>();
+            enemy.LookAt(player.currentPosition.Position);
+            enemy.Damage(1); // replace 1 in future with weapon damage
 
             return true;
         }
