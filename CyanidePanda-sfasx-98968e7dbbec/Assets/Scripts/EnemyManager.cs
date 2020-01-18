@@ -68,4 +68,17 @@ public class EnemyManager : MonoBehaviour
 
         enemies.Add(en);
     }
+
+    public IEnumerator ProcessTurn ()
+    {
+        foreach(Enemy e in enemies)
+        {
+            CameraControls.MoveToPosition(e.transform);
+            yield return e.ProcessTurn();
+        }
+
+        CameraControls.instance.attachedTarget = null;
+
+        Debug.Log("AI Turns Processed");
+    }
 }

@@ -314,7 +314,7 @@ public class Environment : MonoBehaviour
                             if (neighbour == null)
                                 continue;
 
-                            if (!neighbour.Visited && neighbour.State == EnvironmentTile.TileState.None)
+                            if (!neighbour.Visited && neighbour.State == EnvironmentTile.TileState.None || neighbour == destination)
                             {
                                 mToBeTested.Add(neighbour);
                             }

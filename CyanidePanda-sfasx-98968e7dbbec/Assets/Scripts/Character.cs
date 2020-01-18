@@ -29,6 +29,12 @@ public class Character : MonoBehaviour
     // the path visualiser attached to this character
     public PathVisualiser pathVisualiser;
 
+    private Animator animator;
+
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
     private void Start()
     {
         pathVisualiser = Instantiate((GameObject)Resources.Load("PathVisualiser")).GetComponent<PathVisualiser>();
@@ -47,6 +53,9 @@ public class Character : MonoBehaviour
             }
             lastTargetTile = targetTile;
         }
+
+        // update the characters moving animation
+        animator.SetBool("IsWalking", IsMoving);
     }
 
     public void Init()
@@ -182,6 +191,9 @@ public class Character : MonoBehaviour
             }
         }
 
+        if (CameraControls.instance.attachedTarget == transform)
+            CameraControls.instance.attachedTarget = null;
+
         // update the path visualiser's current position
         pathVisualiser.current = currentPosition;
     }
@@ -191,5 +203,21 @@ public class Character : MonoBehaviour
         // that clicks can interupt any current route animation
         StopAllCoroutines();
         StartCoroutine(DoGoTo(route));
+    }
+
+    public void Footstep()
+    {
+
+    }
+
+    private Enemy target;
+    public void Attack (Enemy enemy)
+    {
+        target = enemy;
+        animator.SetTrigger("Attack");
+    }
+    public void Hit ()
+    {
+        target.Damage(1); // replace 1 in future with weapon damage
     }
 }

@@ -59,6 +59,8 @@ public class AbilityMove : Ability
             List<EnvironmentTile> route = Environment.instance.Solve(player.currentPosition, player.targetTile);
             player.GoTo(route);
 
+            CameraControls.MoveToPosition(player.transform);
+
             currentCooldown = maxCooldown;
 
             return true;

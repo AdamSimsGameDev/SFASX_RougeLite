@@ -140,7 +140,7 @@ public class Game : MonoBehaviour
         CurrentTurn = 0;
         character.Init();
 
-        player.MoveToPosition(character.transform.position);
+        CameraControls.MoveToPosition(character.transform.position);
         EnemyManager.instance.Initialize(2);
 
         IsPlaying = true;
@@ -160,7 +160,9 @@ public class Game : MonoBehaviour
     {
         IsTurnRunning = true;
 
-        yield return new WaitForSeconds(1.0F);
+        yield return EnemyManager.instance.ProcessTurn();
+
+        CameraControls.MoveToPosition(character.currentPosition.Position);
 
         IsTurnRunning = false;
         CurrentTurn++;

@@ -197,7 +197,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1995873191997296201}
-  - component: {fileID: -31181852991071031}
+  - component: {fileID: -4453361876016270619}
   - component: {fileID: 2107801244328670546}
   m_Layer: 0
   m_Name: Dummy
@@ -221,7 +221,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-31181852991071031
+--- !u!114 &-4453361876016270619
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -230,11 +230,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6606281657647874806}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9145839db2c5f334fa46cfbf67bcb293, type: 3}
+  m_Script: {fileID: 11500000, guid: cd8f952980ffe214499ad2d3e150905e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   SingleNodeMoveTime: 0.5
   IsAnimating: 0
+  IsCurrentlyProcessingTurn: 0
+  IsMoving: 0
 --- !u!95 &2107801244328670546
 Animator:
   serializedVersion: 3

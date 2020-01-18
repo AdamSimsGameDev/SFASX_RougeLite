@@ -20,7 +20,7 @@ public class AbilityBasicAttack : Ability
         List<EnvironmentTile> enemyTiles = Environment.instance.GetAllTilesOfType(EnvironmentTile.TileState.Enemy);
 
         // define the attack range
-        int attackRange = 2;
+        int attackRange = 1;
 
         // loop through the attack range on both the X and Y
         for (int i = -attackRange; i < attackRange + 1; i++)
@@ -49,11 +49,11 @@ public class AbilityBasicAttack : Ability
         {
             currentCooldown = maxCooldown;
 
-            player.transform.rotation = Quaternion.LookRotation(targetTile.Position - player.currentPosition.Position, Vector3.up);
-
             Enemy enemy = targetTile.Occupier.GetComponent<Enemy>();
             enemy.LookAt(player.currentPosition.Position);
-            enemy.Damage(1); // replace 1 in future with weapon damage
+
+            player.Attack(enemy);
+            player.transform.rotation = Quaternion.LookRotation(targetTile.Position - player.currentPosition.Position, Vector3.up);
 
             return true;
         }
