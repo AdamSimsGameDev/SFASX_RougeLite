@@ -20,4 +20,5 @@ public class EnemySpawnData
 {
     public Enemy enemy;
     public int value;
+    public int maxValue;
 }

@@ -34,6 +34,15 @@ public abstract class Enemy : Entity
         // update the enemies moving animation
         animator.SetBool("IsWalking", IsMoving);
     }
+
+    /// <summary>
+    /// Sets this enemies equipment using points.
+    /// </summary>
+    /// <param name="points"></param>
+    public virtual void SetEquipment(int points)
+    {
+        return;
+    }
     
     /// <summary>
     /// Sets up the enemies movement, attack and secondary abilities.

@@ -224,7 +224,7 @@ public class Inventory : MonoBehaviour
     {
         int amount = item.amount.GetRandom();
         int r = AddItem(item.key, amount);
-
+        Debug.Log(instance.allItems[item.key].amount);
         Game.ui.AddDropUI(item.key, amount - r);        
     }
 

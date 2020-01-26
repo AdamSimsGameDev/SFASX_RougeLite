@@ -39,10 +39,10 @@ things i need to do before the hand in:
 - more enemies
 - more weapons
 + more armour sets
-- more consumables, used as drops maybe
++ more consumables, used as drops maybe
 - some misc items
 - more abilities
-	- fire bolt
+	+ fire bolt
 	- leap
 	- life steal
 	- poison

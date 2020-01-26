@@ -191,4 +191,15 @@ public class Character : Entity
         }
         abilities[currentAbility].DamageTarget(d, weapon == "" ? attackElement : ((Weapon)Inventory.instance.allItems[weapon]).element);
     }
+
+    /// <summary>
+    /// Handles the death of the player.
+    /// </summary>
+    public override void Die()
+    {
+        base.Die();
+
+        Game.instance.Lose();
+        CameraControls.MoveToPosition(transform);
+    }
 }

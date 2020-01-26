@@ -93,7 +93,7 @@ public class InventoryUI : MonoBehaviour
             // this is done by looping through all inactive and active elements and finding those who are either forced to be hidden or are active. 
             foreach (InventoryElement e in elements)
             {
-                if (e.forceHide || e.gameObject.activeInHierarchy)
+                if (e.forceHide || e.isInteractable)
                     validElements.Add(e);
             }
             
@@ -105,6 +105,7 @@ public class InventoryUI : MonoBehaviour
             for (int i = 0; i < validElements.Count; i++)
             {
                 bool isActive = (i >= min && i < max);
+                Debug.Log("i: " + i + " min: " + min + " max: " + max);
                 validElements[i].forceHide = !isActive;
                 validElements[i].gameObject.SetActive(isActive);
             }
@@ -142,7 +143,12 @@ public class InventoryUI : MonoBehaviour
     }
     public void UpdateInventory()
     {
-        foreach(InventoryElement element in elements)
+        for (int i = 0; i < inventories.Length; i++)
+        {
+            inventories[i].GetComponent<Menu>().UpdateMenuVisuals();
+        }
+
+        foreach (InventoryElement element in elements)
         {
             element.UpdateVisuals();
         }
@@ -154,7 +160,7 @@ public class InventoryUI : MonoBehaviour
             List<InventoryElement> validElements = new List<InventoryElement>();
             foreach (InventoryElement e in elements)
             {
-                if (e.forceHide || e.gameObject.activeInHierarchy)
+                if (e.forceHide || e.isInteractable)
                     validElements.Add(e);
             }
 

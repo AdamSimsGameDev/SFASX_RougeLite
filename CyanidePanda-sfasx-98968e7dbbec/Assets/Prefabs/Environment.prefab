@@ -55,9 +55,11 @@ MonoBehaviour:
     - enemy: {fileID: 987977167257660761, guid: 201e0754d2974a747b904f51cf70933e,
         type: 3}
       value: 2
+      maxValue: 2
     - enemy: {fileID: 7372244544730475448, guid: b5f38e52a8dd43f409661f8059f1d724,
         type: 3}
-      value: 5
+      value: 4
+      maxValue: 6
     accessiblePercentage: 0.85
   - name: Desert
     accessible:

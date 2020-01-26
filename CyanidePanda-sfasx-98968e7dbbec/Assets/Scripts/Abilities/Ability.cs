@@ -17,6 +17,7 @@ public abstract class Ability
         { "move", new AbilityMove() },
         { "basic_attack", new AbilityBasicAttack() },
         { "heal", new AbilityHeal() },
+        { "fireball", new AbilityFireball() },
     };
 
     // the current cooldown of this ability

@@ -4,28 +4,90 @@ using UnityEngine;
 
 public class Bandit : Enemy
 {
-    protected override void OnStart()
+    public override void SetEquipment(int points)
     {
         base.OnStart();
 
-        int r = Random.Range(0, 4);
-        switch (r)
+        // weapon
+        Dictionary<string, int> weapon = new Dictionary<string, int>()
         {
-            case 0:
-                SetArmour(0, "leather_helmet");
-                break;
-            case 1:
-                SetArmour(1, "leather_chestplate");
-                break;
-            case 2:
-                SetArmour(2, "leather_leggings");
-                break;
-            case 3:
-                SetArmour(3, "leather_boots");
-                break;
+            { "stick_wooden", 2 },
+            { "dagger_iron", 6 },
+            { "shortsword_iron", 10 }
+        };
+        List<string> weaponTags = new List<string>();
+        foreach(KeyValuePair<string, int> kvp in weapon)
+        {
+            weaponTags.Insert(0, kvp.Key);
         }
 
-        SetWeapon("test_stick");
+        // armour
+        List<string> armour = new List<string>()
+        {
+            "iron",
+            "hardened_leather",
+            "leather",
+        };
+
+        // regular bandits will favour weapons over armour.
+        int remainingPoints = points;
+        
+        // weapon
+        for (int i = 0; i < weaponTags.Count; i++)
+        {
+            if (remainingPoints >= weapon[weaponTags[i]])
+            {
+                SetWeapon(weaponTags[i]);
+                remainingPoints -= weapon[weaponTags[i]];
+                break;
+            }
+        }
+
+        // armour
+        // chestplate first
+        for (int i = 0; i < armour.Count; i++)
+        {
+            int price = ((Armour)Inventory.instance.allItems[armour[i] + "_chestplate"]).defense;
+            if (remainingPoints >= weapon[weaponTags[i]])
+            {
+                SetArmour(1, armour[i] + "_chestplate");
+                remainingPoints -= price;
+                break;
+            }
+        }
+        // then leggings
+        for (int i = 0; i < armour.Count; i++)
+        {
+            int price = ((Armour)Inventory.instance.allItems[armour[i] + "_leggings"]).defense;
+            if (remainingPoints >= weapon[weaponTags[i]])
+            {
+                SetArmour(2, armour[i] + "_leggings");
+                remainingPoints -= price;
+                break;
+            }
+        }
+        // then helmet
+        for (int i = 0; i < armour.Count; i++)
+        {
+            int price = ((Armour)Inventory.instance.allItems[armour[i] + "_helmet"]).defense;
+            if (remainingPoints >= weapon[weaponTags[i]])
+            {
+                SetArmour(0, armour[i] + "_helmet");
+                remainingPoints -= price;
+                break;
+            }
+        }
+        // then boots
+        for (int i = 0; i < armour.Count; i++)
+        {
+            int price = ((Armour)Inventory.instance.allItems[armour[i] + "_boots"]).defense;
+            if (remainingPoints >= weapon[weaponTags[i]])
+            {
+                SetArmour(3, armour[i] + "_boots");
+                remainingPoints -= price;
+                break;
+            }
+        }
     }
 
     protected override void SetupAbilities()

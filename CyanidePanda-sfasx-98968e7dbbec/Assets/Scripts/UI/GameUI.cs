@@ -36,7 +36,7 @@ public class GameUI : MenuManager
         manaText.value = Game.character.mana;
         manaText.maxValue = Game.character.maxMana;
 
-        currencyText.value = Global.instance.currency;
+        currencyText.value = Global.instance.currency + Global.instance.currencyEarnedThisLevel;
 
         string ab = "";
         if (Game.character.currentAbility != "" && !Game.character.IsProcessingAbility)

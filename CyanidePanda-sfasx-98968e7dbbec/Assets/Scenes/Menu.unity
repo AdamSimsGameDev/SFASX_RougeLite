@@ -1384,7 +1384,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilities:
   - heal
-  - 
+  - fireball
   - 
   - 
   - 

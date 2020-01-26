@@ -11,6 +11,12 @@ public class EnemyManager : MonoBehaviour
     {
         instance = this;
     }
+    private void Update()
+    {
+        if (Game.instance.IsLevelEnded)
+            StopAllCoroutines();
+    }
+
     public void Initialize(Biome biome)
     {
         // work out all of the enemies we want to spawn
@@ -34,6 +40,8 @@ public class EnemyManager : MonoBehaviour
         // instead we want at least two enemies on the board at once.
         // this means we can never spawn an enemy with a value that is more than half of the points.
         List<Enemy> enemiesToSpawn = new List<Enemy>();
+        // the points given to each enemy
+        List<int> enemyPoints = new List<int>();
 
         // half point
         int halfPoint = Mathf.FloorToInt(points / 2.0F);
@@ -43,12 +51,23 @@ public class EnemyManager : MonoBehaviour
         {
             // check to see if we can afford anything
             int purchasable = -1;
+            int price = -1;
             for (int i = 0; i < enemyList.Count; i++)
             {
                 // we check that it is affordable AND it is cheaper than half of the point requirement
-                if (enemyList[i].value <= remaining && enemyList[i].value <= halfPoint)
+                for (int j = enemyList[i].maxValue; j > enemyList[i].value - 1; j--)
+                {
+                    if (j <= remaining && j <= halfPoint)
+                    {
+                        price = j;
+                        break;
+                    }
+                }
+                if (price != -1)
                 {
                     purchasable = i;
+                    // randomise the price slightly to add some variety
+                    price = Random.Range(enemyList[i].value, price + 1);
                     break;
                 }
             }
@@ -61,6 +80,8 @@ public class EnemyManager : MonoBehaviour
             remaining -= enemyList[purchasable].value;
             // and add the enemy to the list
             enemiesToSpawn.Add(enemyList[purchasable].enemy);
+            // add the points
+            enemyPoints.Add(price);
         }
 
         // we can then go about spawning the enemies
@@ -75,6 +96,25 @@ public class EnemyManager : MonoBehaviour
             Vector3 tilePos = e.Position;
             tilePos.y = 0.0F;
 
+            int connections = 0;
+            int obstacles = 0;
+            for (int j = 0; j < e.Connections.Count; j++)
+            {
+                if (e.Connections[j] != null)
+                    connections++;
+                else
+                    continue;
+
+                if (e.Connections[j].State == EnvironmentTile.TileState.Obstacle)
+                    obstacles++;
+            }
+
+            if (connections == obstacles)
+            {
+                tiles.Remove(e);
+                continue;
+            }
+
             float distance = Vector3.Distance(tilePos, playerPos);
             if (distance <= 20.0F)
             {
@@ -86,11 +126,11 @@ public class EnemyManager : MonoBehaviour
 
         for (int i = 0; i < enemiesToSpawn.Count; i++)
         {
-            CreateEnemy(ref tiles, enemiesToSpawn[i].gameObject);
+            CreateEnemy(ref tiles, enemiesToSpawn[i].gameObject, enemyPoints[i]);
         }
     }
 
-    private void CreateEnemy(ref List<EnvironmentTile> possiblePositions, GameObject enemyObject)
+    private void CreateEnemy(ref List<EnvironmentTile> possiblePositions, GameObject enemyObject, int price)
     {
         bool positionFound = false;
         EnvironmentTile position = null;
@@ -111,6 +151,7 @@ public class EnemyManager : MonoBehaviour
 
         Enemy en = go.GetComponent<Enemy>();
         en.currentPosition = position;
+        en.SetEquipment(price);
 
         position.Occupier = go;
         position.State = EnvironmentTile.TileState.Enemy;
@@ -132,6 +173,9 @@ public class EnemyManager : MonoBehaviour
 
         foreach(Enemy e in enemies)
         {
+            if (Game.instance.IsLevelEnded)
+                break;
+
             yield return e.ProcessTurn();
         }
 

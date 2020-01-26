@@ -96,20 +96,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83a54eb577d5feb4b9c8795381354de9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
-  maxHealth: 100
+  health: 60
+  maxHealth: 60
   mana: 30
   maxMana: 30
-  attackDamage: 8
-  attackRange: 1
-  IsProcessingAbility: 0
-  animator: {fileID: 0}
+  overheadCanvas: {fileID: 0}
   armour:
   - 
   - 
   - 
   - 
   weapon: 
+  attackDamage: 8
+  attackRange: 1
+  attackElement: 0
+  defenseElement: 0
+  IsProcessingAbility: 0
+  animator: {fileID: 0}
   currentAbility: 
   hoveredAbility: 
   pathVisualiser: {fileID: 0}

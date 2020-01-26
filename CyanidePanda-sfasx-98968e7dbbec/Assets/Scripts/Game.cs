@@ -14,6 +14,7 @@ public class Game : MonoBehaviour
     [SerializeField] private Canvas Menu;
     [SerializeField] private Canvas Hud;
     [SerializeField] private Canvas WinScreen;
+    [SerializeField] private Canvas LoseScreen;
     [SerializeField] private Transform CharacterStart;
 
     public bool IsPlaying;
@@ -53,7 +54,7 @@ public class Game : MonoBehaviour
             if (EnemyManager.instance.enemies.Count == 0)
             {
                 // COMPLETE THE LEVEL :)
-                StartCoroutine(EndLevel());
+                StartCoroutine(WinLevel());
             }
 
             if (!IsTurnRunning)
@@ -84,7 +85,7 @@ public class Game : MonoBehaviour
                     character.targetTile = character.currentPosition;
                 }
 
-                if (Input.GetButtonDown("Use") && CurrentTurn >= 0 && character.IsProcessingAbility == false)
+                if (Input.GetButtonDown("Use") && CurrentTurn >= 0 && character.IsProcessingAbility == false && !instance.IsLevelEnded)
                 {
                     character.UseAbility(false, character.currentAbility, character.targetTile);
                 }
@@ -95,7 +96,7 @@ public class Game : MonoBehaviour
         {
             if (Input.GetButtonDown("Use"))
             {
-                Global.instance.BackToWorldMap(true);
+                Global.instance.BackToWorldMap(Global.instance.IsLevelCompleted);
             }
         }
     }
@@ -205,10 +206,16 @@ public class Game : MonoBehaviour
         ui.EndTurn();
     }
 
+    public void Lose()
+    {
+        StartCoroutine(LoseLevel());
+    }
+
     // end the level
-    private IEnumerator EndLevel ()
+    private IEnumerator WinLevel ()
     {
         IsLevelEnded = true;
+        Global.instance.IsLevelCompleted = true;
 
         foreach (KeyValuePair<string, Ability> ab in Ability.abilities)
             ab.Value.currentCooldown = 0;
@@ -220,6 +227,27 @@ public class Game : MonoBehaviour
 
             Hud.GetComponent<CanvasGroup>().alpha = 1.0F - timer;
             WinScreen.GetComponent<CanvasGroup>().alpha = timer;
+
+            yield return null;
+        }
+        while (timer != 1.0F);
+    }
+
+    private IEnumerator LoseLevel()
+    {
+        IsLevelEnded = true;
+        Global.instance.IsLevelCompleted = false;
+
+        foreach (KeyValuePair<string, Ability> ab in Ability.abilities)
+            ab.Value.currentCooldown = 0;
+
+        float timer = 0.0F;
+        do
+        {
+            timer = Mathf.Clamp01(timer + Time.deltaTime);
+
+            Hud.GetComponent<CanvasGroup>().alpha = 1.0F - timer;
+            LoseScreen.GetComponent<CanvasGroup>().alpha = timer;
 
             yield return null;
         }

@@ -26,9 +26,12 @@ public class Global : MonoBehaviour
     public LevelData currentLevel { get { return levels[levelIndex];} }
 
     // the current level's index.
-    private int levelIndex = -1;
+    [SerializeField] private int levelIndex = -1;
     // the current save slot.
     private int currentSaveSlot;
+
+    // the first time the scene is created
+    private bool hasCreatedLevelOnce = false;
 
     // the load state of the worldmap scene.
     private AsyncOperation asyncLoad;
@@ -44,6 +47,8 @@ public class Global : MonoBehaviour
 
     // the current amount of money the player has collected in this level
     public int currency = 0;
+    // currency earned this level
+    public int currencyEarnedThisLevel = 0;
 
     private void Awake()
     {
@@ -161,12 +166,10 @@ public class Global : MonoBehaviour
     {
         if (win)
         {
-            IsLevelCompleted = true;
             SceneManager.LoadScene(1);
         }
         else
         {
-            IsLevelCompleted = false;
             SceneManager.LoadScene(1);
         }
         IsPlaying = false;
@@ -198,31 +201,66 @@ public class Global : MonoBehaviour
                 break;
             case 1: // world map
                 WorldMap map = FindObjectOfType<WorldMap>();
+
                 if (levels.Count == 0)
-                {
+                {                        
                     // create the first level
                     map.AddNewLevel();
                     map.CreateLevelGraphics(0, true);
+
+                    hasCreatedLevelOnce = true;
                 }
                 else
                 {
-                    // otherwise render the levels
-                    map.CreateLevels(false);
-
-                    // teleport the camera
-                    CameraControls.instance.transform.position = new Vector3(3.0F * selectedLevel, 0.0F, -10.0F);
-
-                    // create a new level
-                    if (IsLevelCompleted && !levels[levelIndex].isCompleted)
+                    if (!hasCreatedLevelOnce)
                     {
-                        map.AddNewLevel();
-                        map.CreateLevelGraphics(levels.Count - 1, false);
+                        // render the levels
+                        map.CreateLevels(false);
+                        SaveGame();
 
-                        IsLevelCompleted = false;
-                        levels[levelIndex].isCompleted = true;
+                        hasCreatedLevelOnce = true;
+                        break;
+                    }
+
+                    if (!IsLevelCompleted && levelIndex != -1)
+                    {
+                        // this means we died rip.
+                        // because of this we want to basically reset the level.
+                        selectedLevel = 0;
+                        levels.Clear();
+                        map.AddNewLevel();
+                        map.CreateLevelGraphics(0, true);
+                        nextBiome = BiomeType.Meadow;
+
+                        consecutiveBiomes = 0;
 
                         SaveGame();
                     }
+                    else
+                    {
+                        // add the earned currency
+                        currency += currencyEarnedThisLevel;
+
+                        // otherwise render the levels
+                        map.CreateLevels(false);
+
+                        // create a new level
+                        if (!levels[levelIndex].isCompleted)
+                        {
+                            map.AddNewLevel();
+                            map.CreateLevelGraphics(levels.Count - 1, false);
+
+                            IsLevelCompleted = false;
+                            levels[levelIndex].isCompleted = true;
+
+                            SaveGame();
+                        }
+                    }
+
+                    // teleport the camera
+                    CameraControls.instance.transform.position = new Vector3(3.0F * selectedLevel, 0.0F, -10.0F);
+                    // reset the earned currency
+                    currencyEarnedThisLevel = 0;
                 }
                 break;
             case 2: // in game
