@@ -9,8 +9,8 @@ public class Entity : MonoBehaviour
     [Space]
     public int mana;
     public int maxMana;
-    [Space]
-    public Transform overheadCanvas;
+
+    private Transform overheadCanvas;
 
     [Header("Armour & Weapons")]
     // the humanoid entity is similar to the actual entity, except this has options for armour and weapons
@@ -82,6 +82,9 @@ public class Entity : MonoBehaviour
 
         rootBone = transform.Find("Armature").Find("root");
         baseMesh = GetComponentInChildren<SkinnedMeshRenderer>();
+
+        if (transform.GetComponentInChildren<Canvas>())
+            overheadCanvas = transform.GetComponentInChildren<Canvas>().transform;
     }
     protected virtual void OnStart()
     {
@@ -120,6 +123,9 @@ public class Entity : MonoBehaviour
         health += amount;
         if (health > maxHealth)
             health = maxHealth;
+
+        // create the damage indicator
+        CreateDamageIndicator(-health);
     }
     /// <summary>
     /// Increases the mana of the entity by a set amount.
@@ -182,7 +188,6 @@ public class Entity : MonoBehaviour
 
         go.GetComponent<DamageIndicator>().SetValue(amount * -1);
     }
-
 
     /// <summary>
     /// Handles the death of the entity.

@@ -23,17 +23,52 @@ public class AbilityHeal : Ability
         tiles.Add(ourEntity.currentPosition);
     }
 
+    public override Entity GetTarget()
+    {
+        List<EnvironmentTile> tiles = Environment.instance.GetAllTilesOfType(EnvironmentTile.TileState.Enemy);
+
+        Entity target = null;
+        float lowest = 1000.0F;
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            Entity entity = tiles[i].Occupier.GetComponent<Entity>();
+            if (entity == ourEntity)
+                continue;
+
+            int distance = Environment.instance.Solve(ourEntity.currentPosition, entity.currentPosition).Count;
+            float basePercentage = (entity.health / (float)entity.maxHealth);
+            Debug.Log(entity.name + ": " + basePercentage);
+
+            if (basePercentage == 1.0F)
+                continue;
+
+            float percentage = basePercentage + (distance * 0.1F);
+
+            if (percentage < lowest)
+            {
+                target = entity;
+                lowest = percentage;
+            }
+        }
+
+        return target;
+    }
+
     protected override IEnumerator UseAI(EnvironmentTile targetTile)
     {
         Entity e = targetTile.Occupier.GetComponent<Entity>();
-        e.Heal(30);
 
         currentCooldown = maxCooldown;
 
         CameraControls.MoveToPosition(ourEntity.transform);
         ourEntity.FinishUsingAbility();
 
-        yield return null;
+        yield return new WaitForSeconds(0.1F);
+
+        e.Heal(30);
+        CameraControls.MoveToPosition(e.transform);
+
+        yield return new WaitForSeconds(1.0F);
     }
     protected override IEnumerator UsePlayer(EnvironmentTile targetTile)
     {
@@ -54,6 +89,8 @@ public class AbilityHeal : Ability
             ourEntity.IsProcessingAbility = false;
         }
     }
+
+    
 
     // the function that is ran at the end of a turn
     public override void EndTurn()

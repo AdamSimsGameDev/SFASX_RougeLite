@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bandit : Enemy
+public class BanditHealer : Enemy
 {
     public override void SetEquipment(int points)
     {
-        base.OnStart();
-
         // weapon
         Dictionary<string, int> weapon = new Dictionary<string, int>()
         {
-            { "stick_wooden", 2 },
-            { "dagger_iron", 6 },
-            { "shortsword_iron", 10 }
+            { "healing_staff", 0 },
         };
 
         // armour
@@ -36,5 +32,9 @@ public class Bandit : Enemy
         // initialize this enemies attack ability
         attackAbility = new AbilityBasicAttack();
         attackAbility.Init(this);
+
+        // initialize this enemies secondary ability
+        secondaryAbility = new AbilityHeal();
+        secondaryAbility.Init(this);
     }
 }

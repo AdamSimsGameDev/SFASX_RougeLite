@@ -56,10 +56,17 @@ MonoBehaviour:
         type: 3}
       value: 2
       maxValue: 2
+      maxAmount: -1
     - enemy: {fileID: 7372244544730475448, guid: b5f38e52a8dd43f409661f8059f1d724,
         type: 3}
-      value: 4
-      maxValue: 6
+      value: 5
+      maxValue: 20
+      maxAmount: -1
+    - enemy: {fileID: -7187058670437588796, guid: c3d8fc0f5cfecd542b1a034fbd5b61c2,
+        type: 3}
+      value: 8
+      maxValue: 16
+      maxAmount: 1
     accessiblePercentage: 0.85
   - name: Desert
     accessible:

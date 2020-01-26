@@ -1396,9 +1396,12 @@ MonoBehaviour:
   weapon: stick_wooden
   IsPlaying: 0
   IsLevelCompleted: 0
+  biomeDifficulties: 000000000400000008000000
   levels: []
+  levelIndex: -1
   selectedLevel: 0
   currency: 0
+  currencyEarnedThisLevel: 0
 --- !u!114 &633456228
 MonoBehaviour:
   m_ObjectHideFlags: 0

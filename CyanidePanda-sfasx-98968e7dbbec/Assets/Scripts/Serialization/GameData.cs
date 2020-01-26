@@ -20,6 +20,9 @@ public class GameData
     // biome progress
     public int consecutiveBiomes;
 
+    // biome difficulties
+    public int[] biomeDifficulties;
+
     // weapon key
     public string weapon;
     // weapon armour

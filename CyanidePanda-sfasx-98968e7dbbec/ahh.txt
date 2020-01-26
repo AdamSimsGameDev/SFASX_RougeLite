@@ -43,6 +43,7 @@ things i need to do before the hand in:
 - some misc items
 - more abilities
 	+ fire bolt
+	+ heal
 	- leap
 	- life steal
 	- poison

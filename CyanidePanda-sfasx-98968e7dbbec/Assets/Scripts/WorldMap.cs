@@ -75,6 +75,8 @@ public class WorldMap : MonoBehaviour
         level.Init();
         level.biome = Global.instance.GetBiome();
 
+        Global.instance.biomeDifficulties[(int)level.biome] += 4;
+
         Global.instance.levels.Add(level);
     }
     /// <summary>

@@ -17,10 +17,12 @@ public class EnemyManager : MonoBehaviour
             StopAllCoroutines();
     }
 
-    public void Initialize(Biome biome)
+    public void Initialize(int biomeID)
     {
+        Biome biome = Environment.instance.biomes[biomeID];
+
         // work out all of the enemies we want to spawn
-        int points = 4 + (Global.instance.selectedLevel * 4);
+        int points = Global.instance.biomeDifficulties[biomeID];
         int remaining = points;
 
         // we can now distribute these points however we want
@@ -52,8 +54,24 @@ public class EnemyManager : MonoBehaviour
             // check to see if we can afford anything
             int purchasable = -1;
             int price = -1;
-            for (int i = 0; i < enemyList.Count; i++)
+            for (int i = 0; i < enemyList.Count;)
             {
+                // the amount of enemies of this type
+                int amount = 0;
+                // loop through the enemies to find the amount
+                for (int j = 0; j < enemiesToSpawn.Count; j++)
+                {
+                    if (enemiesToSpawn[j] == enemyList[i].enemy)
+                        amount++;
+                }
+
+                // if the amount is equal to the maximum, return
+                if (amount == enemyList[i].maxAmount)
+                {
+                    enemyList.RemoveAt(i);
+                    continue;
+                }
+
                 // we check that it is affordable AND it is cheaper than half of the point requirement
                 for (int j = enemyList[i].maxValue; j > enemyList[i].value - 1; j--)
                 {
@@ -70,6 +88,8 @@ public class EnemyManager : MonoBehaviour
                     price = Random.Range(enemyList[i].value, price + 1);
                     break;
                 }
+
+                i++;
             }
 
             // if we can't purchase anything just break out

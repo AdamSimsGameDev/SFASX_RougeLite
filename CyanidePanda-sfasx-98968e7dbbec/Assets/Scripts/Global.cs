@@ -22,6 +22,9 @@ public class Global : MonoBehaviour
     // whether the level has been completed successfully.
     public bool IsLevelCompleted;
 
+    // the biome difficulties
+    public int[] biomeDifficulties;
+
     public List<LevelData> levels = new List<LevelData>();
     public LevelData currentLevel { get { return levels[levelIndex];} }
 
@@ -303,6 +306,8 @@ public class Global : MonoBehaviour
         data.weapon = weapon;
         data.armour = armour;
 
+        data.biomeDifficulties = biomeDifficulties;
+
         List<InventoryData> inventory = new List<InventoryData>();
         foreach(KeyValuePair<string, Item> kvp in Inventory.instance.allItems)
         {
@@ -351,6 +356,9 @@ public class Global : MonoBehaviour
             selectedLevel = d.lastSelectedLevel;
             // set consecutive biomes
             consecutiveBiomes = d.consecutiveBiomes;
+
+            // set the biome difficulties
+            biomeDifficulties = d.biomeDifficulties;
 
             // set the weapon and armour
             weapon = d.weapon;

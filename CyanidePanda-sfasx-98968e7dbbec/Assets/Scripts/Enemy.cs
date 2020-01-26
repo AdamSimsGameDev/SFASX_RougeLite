@@ -16,6 +16,8 @@ public abstract class Enemy : Entity
     // the enemies secondary ability.
     public Ability secondaryAbility;
 
+    public bool avoidPlayer;
+
     private StatText healthText;
 
     protected override void OnAwake()
@@ -42,6 +44,75 @@ public abstract class Enemy : Entity
     public virtual void SetEquipment(int points)
     {
         return;
+    }
+
+    public virtual void SetEquipment(int points, List<string> armour, Dictionary<string, int> weaponDict)
+    {
+        List<string> weaponTags = new List<string>();
+        foreach (KeyValuePair<string, int> kvp in weaponDict)
+        {
+            weaponTags.Insert(0, kvp.Key);
+        }
+
+        // set the remaining points to points
+        int remainingPoints = points;
+
+        // weapon
+        for (int i = 0; i < weaponTags.Count; i++)
+        {
+            if (remainingPoints >= weaponDict[weaponTags[i]])
+            {
+                SetWeapon(weaponTags[i]);
+                remainingPoints -= weaponDict[weaponTags[i]];
+                break;
+            }
+        }
+
+        // armour
+        // chestplate first
+        for (int i = 0; i < armour.Count; i++)
+        {
+            int price = ((Armour)Inventory.instance.allItems[armour[i] + "_chestplate"]).defense;
+            if (remainingPoints >= price)
+            {
+                SetArmour(1, armour[i] + "_chestplate");
+                remainingPoints -= price;
+                break;
+            }
+        }
+        // then leggings
+        for (int i = 0; i < armour.Count; i++)
+        {
+            int price = ((Armour)Inventory.instance.allItems[armour[i] + "_leggings"]).defense;
+            if (remainingPoints >= price)
+            {
+                SetArmour(2, armour[i] + "_leggings");
+                remainingPoints -= price;
+                break;
+            }
+        }
+        // then helmet
+        for (int i = 0; i < armour.Count; i++)
+        {
+            int price = ((Armour)Inventory.instance.allItems[armour[i] + "_helmet"]).defense;
+            if (remainingPoints >= price)
+            {
+                SetArmour(0, armour[i] + "_helmet");
+                remainingPoints -= price;
+                break;
+            }
+        }
+        // then boots
+        for (int i = 0; i < armour.Count; i++)
+        {
+            int price = ((Armour)Inventory.instance.allItems[armour[i] + "_boots"]).defense;
+            if (remainingPoints >= price)
+            {
+                SetArmour(3, armour[i] + "_boots");
+                remainingPoints -= price;
+                break;
+            }
+        }
     }
     
     /// <summary>
@@ -94,38 +165,46 @@ public abstract class Enemy : Entity
             // if we are able to use the secondary ability we will!
             Entity target = secondaryAbility.GetTarget();
 
-            // if we aren't close enough to the target we need to get closer.
-            // to test this we solve the path from ourself to the other entity.
-            int distance = Environment.instance.Solve(target.currentPosition, currentPosition).Count - 1;
-            if (distance > secondaryAbility.range)
-            {                    
-                // set the last used ability
-                lastUsedAbility = moveAbility;
-                // if we are too far away, move closer to the target
-                yield return moveAbility.Use(true, target.currentPosition);
-                hasMoved = true;
-
-                // after we finish the move we can test our distance again
-                distance = Environment.instance.Solve(target.currentPosition, currentPosition).Count - 1;
-                if (distance <= secondaryAbility.range)
+            if (target != null)
+            {
+                // if we aren't close enough to the target we need to get closer.
+                // to test this we solve the path from ourself to the other entity.
+                int distance = Environment.instance.Solve(target.currentPosition, currentPosition).Count - 1;
+                if (distance > secondaryAbility.range)
                 {
                     // set the last used ability
-                    lastUsedAbility = secondaryAbility;
-                    // in this case if we are close enough we can use the ability
-                    yield return secondaryAbility.Use(true, target.currentPosition);
+                    lastUsedAbility = moveAbility;
+                    // if we are too far away, move closer to the target
+                    yield return moveAbility.Use(true, target.currentPosition);
+                    hasMoved = true;
+
+                    // after we finish the move we can test our distance again
+                    distance = Environment.instance.Solve(target.currentPosition, currentPosition).Count - 1;
+                    if (distance <= secondaryAbility.range)
+                    {
+                        // set the last used ability
+                        lastUsedAbility = secondaryAbility;
+                        // in this case if we are close enough we can use the ability
+                        yield return secondaryAbility.Use(true, target.currentPosition);
+                    }
+                    else
+                    {
+                        // if not we can attempt to use the first ability.
+                        attemptAttack = true;
+                    }
                 }
                 else
                 {
-                    // if not we can attempt to use the first ability.
-                    attemptAttack = true;
+                    // set the last used ability
+                    lastUsedAbility = secondaryAbility;
+                    // if we are close enough we can just use the ability
+                    yield return secondaryAbility.Use(true, target.currentPosition);
                 }
             }
             else
             {
-                // set the last used ability
-                lastUsedAbility = secondaryAbility;
-                // if we are close enough we can just use the ability
-                yield return secondaryAbility.Use(true, target.currentPosition);
+                // if we cant find someone to heal, we can attempt to attack instead
+                attemptAttack = true;
             }
         }
 
@@ -142,19 +221,39 @@ public abstract class Enemy : Entity
                 // if we aren't in range and we haven't already moved
                 if (!hasMoved)
                 {
-                    // set the last used ability
-                    lastUsedAbility = moveAbility;
-                    // if we are too far away, move closer to the target
-                    yield return moveAbility.Use(true, target.currentPosition);
+                    distance = Environment.instance.Solve(target.currentPosition, currentPosition).Count - 1;
+
+                    if (avoidPlayer)
+                    {
+                        if (distance > attackAbility.range)
+                        {
+                            yield return FleePlayer();
+                            hasMoved = true;
+                        }
+                    }
+                    else
+                    {
+                        // set the last used ability
+                        lastUsedAbility = moveAbility;
+                        // if we are too far away, move closer to the target
+                        yield return moveAbility.Use(true, target.currentPosition);
+                        hasMoved = true;
+                    }
 
                     // we then check the distance again
                     distance = Environment.instance.Solve(target.currentPosition, currentPosition).Count - 1;
                     if (distance <= attackAbility.range)
-                    {                    
+                    {
                         // set the last used ability
                         lastUsedAbility = attackAbility;
                         // if this time we are close enough we can attack
                         yield return attackAbility.Use(true, target.currentPosition);
+                        // flee after attacking
+                        if (!hasMoved)
+                        {
+                            yield return FleePlayer();
+                            hasMoved = true;
+                        }
                     }
                 }
             }
@@ -169,6 +268,46 @@ public abstract class Enemy : Entity
 
         IsCurrentlyProcessingTurn = false;
     }
+
+    private IEnumerator FleePlayer ()
+    {
+        EnvironmentTile furthest = null;
+        int curdist = 100;
+
+        // run away by looping through the range and finding the furthest away spot from the player
+        for (int i = -moveAbility.range; i < moveAbility.range + 1; i++)
+        {
+            for (int j = -moveAbility.range; j < moveAbility.range + 1; j++)
+            {
+                // if the tile is within range and exits
+                EnvironmentTile tile = Environment.instance.GetTile(currentPosition.GridPosition.x + i, currentPosition.GridPosition.y + j);
+                if (tile != null)
+                {
+                    if (tile.State == EnvironmentTile.TileState.None)
+                    {
+                        List<EnvironmentTile> path = Environment.instance.Solve(tile, currentPosition);
+                        if (path != null)
+                        {
+                            // gets the distance between ourselves and the tile
+                            int testDistance = path.Count - 1;
+                            if (testDistance > moveAbility.range && testDistance < curdist)
+                            {
+                                // if this distance is the highest, set it to the 'furthest'
+                                curdist = testDistance;
+                                furthest = tile;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // set the last used ability
+        lastUsedAbility = moveAbility;
+        // once we have the furthest tile move to it
+        yield return moveAbility.Use(true, furthest);
+    }
+    
     /// <summary>
     /// Handles the attack animation.
     /// </summary>
@@ -212,6 +351,18 @@ public abstract class Enemy : Entity
     public void Footstep()
     {
         // this will play footsteps.
+    }
+
+    /// <summary>
+    /// Heals the enemy.
+    /// </summary>
+    /// <param name="amount"></param>
+    public override void Heal(int amount)
+    {
+        base.Heal(amount);
+
+        // update the health text
+        UpdateHealthText();
     }
 
     /// <summary>

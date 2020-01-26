@@ -149,7 +149,7 @@ public class Game : MonoBehaviour
         Environment.instance.StartTile.State = EnvironmentTile.TileState.Player;
 
         CameraControls.MoveToPosition(character.transform.position);
-        EnemyManager.instance.Initialize(Environment.instance.biomes[(int)Global.instance.currentLevel.biome]);
+        EnemyManager.instance.Initialize((int)Global.instance.currentLevel.biome);
 
         for (int i = 0; i < 5; i++)
         {

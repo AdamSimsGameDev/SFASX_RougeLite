@@ -150,6 +150,15 @@ public class Inventory : MonoBehaviour
             damage: 10,
             resourcePath: "Weapons/Stick_Wooden"
             ) },
+        { "healing_staff", new Weapon(
+            value: 100,
+            name: "Healing Staff",
+            description: "A simple healing staff.",
+            element: DamageType.Normal,
+            range: 1,
+            damage: 8,
+            resourcePath: "Weapons/Healing_Staff"
+            ) },
 
         // misc
         { "slimeball", new Item(

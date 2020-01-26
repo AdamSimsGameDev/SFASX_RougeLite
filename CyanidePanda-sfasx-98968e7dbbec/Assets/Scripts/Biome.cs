@@ -21,4 +21,6 @@ public class EnemySpawnData
     public Enemy enemy;
     public int value;
     public int maxValue;
+    [Space]
+    public int maxAmount = -1;
 }

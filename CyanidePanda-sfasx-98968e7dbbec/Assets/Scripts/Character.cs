@@ -192,6 +192,13 @@ public class Character : Entity
         abilities[currentAbility].DamageTarget(d, weapon == "" ? attackElement : ((Weapon)Inventory.instance.allItems[weapon]).element);
     }
 
+    public override void Damage(int baseAmount, DamageType type)
+    {
+        base.Damage(baseAmount, type);
+
+        animator.SetTrigger("Hit");
+    }
+
     /// <summary>
     /// Handles the death of the player.
     /// </summary>
