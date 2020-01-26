@@ -9,6 +9,8 @@ public class MainMenu : MenuManager
 {
     [Header("Main Menu")]
     public MenuElement[] saves;
+    public GameObject navigateText;
+    public GameObject tutorialText;
 
     private void Start()
     {
@@ -17,6 +19,8 @@ public class MainMenu : MenuManager
     private void Update ()
     {
         LoadSaveStates();
+        navigateText.SetActive(currentMenu == "mainMenu");
+        tutorialText.SetActive(currentMenu == "levels");
     }
 
     private void LoadSaveStates ()

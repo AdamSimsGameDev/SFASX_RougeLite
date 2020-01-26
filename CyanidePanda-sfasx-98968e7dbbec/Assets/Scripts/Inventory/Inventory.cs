@@ -162,7 +162,7 @@ public class Inventory : MonoBehaviour
 
         // misc
         { "slimeball", new Item(
-            value: 5,
+            value: 20,
             name: "Slimeball",
             description: "A gooey ball of slime."
             ) },
@@ -193,6 +193,32 @@ public class Inventory : MonoBehaviour
             description: "You're not quite sure it's beef but it tastes good?",
             healthRegen: 10,
             manaRegen: 0
+            ) },
+
+        // spell books
+        { "spell_blink", new SpellBook(
+            value: 170,
+            name: "Blink",
+            description: "Allows the user to teleport short distances.",
+            abilityKey: "blink"
+            ) },
+        { "spell_heal", new SpellBook(
+            value: 140,
+            name: "Heal",
+            description: "Heals the user 30HP.",
+            abilityKey: "heal"
+            ) },
+        { "spell_fireball", new SpellBook(
+            value: 120,
+            name: "Fireball",
+            description: "Shoots a fireball that deals 10 damage.",
+            abilityKey: "fireball"
+            ) },
+        { "spell_root", new SpellBook(
+            value: 150,
+            name: "Root",
+            description: "Roots an enemy for 2 turns.",
+            abilityKey: "root"
             ) },
     };
 

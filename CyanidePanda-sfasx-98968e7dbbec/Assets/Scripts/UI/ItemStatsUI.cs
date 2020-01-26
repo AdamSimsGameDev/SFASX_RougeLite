@@ -21,6 +21,8 @@ public class ItemStatsUI : MonoBehaviour
     public int healthRegen;
     public int manaRegen;
 
+    public bool isShop = false;
+
     public void SetWeaponValues(int damage, DamageType type, int range, int value)
     {
         this.damage = damage;
@@ -119,7 +121,7 @@ public class ItemStatsUI : MonoBehaviour
         defenseText.text = "DEFENSE: " + defense.ToString("n0");
         typeText.text = "TYPE: " + typeString;
         rangeText.text = "RANGE: " + range.ToString("n0");
-        valueText.text = "VALUE: " + value.ToString("n0");
+        valueText.text = isShop ? "PRICE: " + value.ToString("n0") : "VALUE: " + Mathf.CeilToInt(value * 0.6F).ToString("n0");
         healthText.text = "HEALTH: +" + healthRegen.ToString("n0");
         manaText.text = "MANA: +" + manaRegen.ToString("n0");
     }

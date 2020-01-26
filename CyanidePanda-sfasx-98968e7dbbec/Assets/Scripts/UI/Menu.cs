@@ -8,6 +8,7 @@ public class Menu : MonoBehaviour
     // the ID that this menu is referred to by
     public string ID;
 
+    public bool staticSelectionElements;
     // an array of the current selectionElements.
     public MenuElement[] selectionElements;
     // the currently selected element
@@ -151,6 +152,9 @@ public class Menu : MonoBehaviour
 
     public void UpdateMenuVisuals ()
     {
+        if (staticSelectionElements)
+            return;
+
         // we then set all elements to inactive
         foreach (MenuElement element in selectionElements)
             element.SetActive(false);
@@ -167,6 +171,10 @@ public class Menu : MonoBehaviour
             {
                 ConditionalElement e = (ConditionalElement)allElements[i];
                 e.UpdateVisuals();
+            }
+            else
+            {
+                allElements[i].gameObject.SetActive(true);
             }
         }
 

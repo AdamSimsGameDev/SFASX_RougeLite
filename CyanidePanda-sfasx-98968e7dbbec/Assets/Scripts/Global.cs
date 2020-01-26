@@ -9,6 +9,10 @@ public class Global : MonoBehaviour
 {
     public static Global instance;
 
+    public LayerMask mask;
+    public LayerMask hidden;
+    public bool hideUI;
+
     // the player's stored abilities
     public string[] abilities = new string[5];
     [Space]
@@ -67,6 +71,14 @@ public class Global : MonoBehaviour
     private void Start()
     {
         StartCoroutine(DoLoadGame());
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            hideUI = !hideUI;
+            Camera.main.cullingMask = hideUI ? hidden : mask;
+        }
     }
 
     /// <summary>
@@ -130,6 +142,38 @@ public class Global : MonoBehaviour
         if (IsPlaying)
         {
             Game.character.SetArmour(piece, tag);
+        }
+    }
+
+    /// <summary>
+    /// Equips an ability.
+    /// </summary>
+    /// <param name="key"></param>
+    public void EquipAbility(string key)
+    {
+        for (int i = 0; i < abilities.Length; i++)
+        {
+            if (abilities[i] == "")
+            {
+                abilities[i] = key;
+                return;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Unequips an ability.
+    /// </summary>
+    /// <param name="key"></param>
+    public void UnequipAbility(string key)
+    {
+        for (int i = 0; i < abilities.Length; i++)
+        {
+            if (abilities[i] == key)
+            {
+                abilities[i] = "";
+                return;
+            }
         }
     }
 
@@ -235,6 +279,15 @@ public class Global : MonoBehaviour
                         map.CreateLevelGraphics(0, true);
                         nextBiome = BiomeType.Meadow;
 
+                        Inventory.instance.Clear();
+                        Inventory.instance.AddItem("small_health_potion", 4);
+                        Inventory.instance.AddItem("stick_wooden", 1);
+                        SetWeapon("stick_wooden");
+                        SetArmour(0, "");
+                        SetArmour(1, "");
+                        SetArmour(2, "");
+                        SetArmour(3, "");
+
                         consecutiveBiomes = 0;
 
                         SaveGame();
@@ -280,6 +333,7 @@ public class Global : MonoBehaviour
     public void CreateNewGame(int slot)
     {
         SaveGame(slot);
+        LoadGame(slot);
     }
 
     /// <summary>
@@ -395,5 +449,13 @@ public class Global : MonoBehaviour
         {
             yield return null;
         }
+    }
+
+    /// <summary>
+    /// Deletes a save game.
+    /// </summary>
+    public void DeleteSave(int index)
+    {
+        File.Delete(Application.persistentDataPath + "/slot" + index.ToString() + ".save");
     }
 }

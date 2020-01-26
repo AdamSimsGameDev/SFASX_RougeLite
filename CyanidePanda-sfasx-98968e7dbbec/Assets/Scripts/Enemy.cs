@@ -172,11 +172,14 @@ public abstract class Enemy : Entity
                 int distance = Environment.instance.Solve(target.currentPosition, currentPosition).Count - 1;
                 if (distance > secondaryAbility.range)
                 {
-                    // set the last used ability
-                    lastUsedAbility = moveAbility;
-                    // if we are too far away, move closer to the target
-                    yield return moveAbility.Use(true, target.currentPosition);
-                    hasMoved = true;
+                    if (RootTurns < 1)
+                    {
+                        // set the last used ability
+                        lastUsedAbility = moveAbility;
+                        // if we are too far away, move closer to the target
+                        yield return moveAbility.Use(true, target.currentPosition);
+                        hasMoved = true;
+                    }
 
                     // after we finish the move we can test our distance again
                     distance = Environment.instance.Solve(target.currentPosition, currentPosition).Count - 1;
@@ -219,7 +222,7 @@ public abstract class Enemy : Entity
             if (distance > attackAbility.range)
             {
                 // if we aren't in range and we haven't already moved
-                if (!hasMoved)
+                if (!hasMoved && RootTurns < 1)
                 {
                     distance = Environment.instance.Solve(target.currentPosition, currentPosition).Count - 1;
 
@@ -267,6 +270,7 @@ public abstract class Enemy : Entity
         }
 
         IsCurrentlyProcessingTurn = false;
+        RootTurns--;
     }
 
     private IEnumerator FleePlayer ()

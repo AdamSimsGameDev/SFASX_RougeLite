@@ -12,7 +12,7 @@ public class AbilityHeal : Ability
     public override bool useWeapon => false;
 
     public override string name => "Heal";
-    public override string description => "Heals the player 50HP.";
+    public override string description => "Heals the player 30HP.";
 
     // calculate the possible tiles on the initialization of this ability.
     public override void Init(Entity entity)
@@ -65,7 +65,10 @@ public class AbilityHeal : Ability
 
         yield return new WaitForSeconds(0.1F);
 
-        e.Heal(30);
+        GameObject go = Object.Instantiate((GameObject)Resources.Load("Abilities/Health"));
+        go.transform.position = e.transform.position;
+
+        e.Heal(15);
         CameraControls.MoveToPosition(e.transform);
 
         yield return new WaitForSeconds(1.0F);
@@ -79,9 +82,11 @@ public class AbilityHeal : Ability
 
             ClearVisualisation();
 
-            ourEntity.Heal(50);
+            ourEntity.Heal(30);
             ourEntity.FinishUsingAbility();
 
+            GameObject go = Object.Instantiate((GameObject)Resources.Load("Abilities/Health"));
+            go.transform.position = ourEntity.transform.position + (Vector3.up * 4.0F);
             yield return null;
         }
         else
@@ -89,8 +94,6 @@ public class AbilityHeal : Ability
             ourEntity.IsProcessingAbility = false;
         }
     }
-
-    
 
     // the function that is ran at the end of a turn
     public override void EndTurn()

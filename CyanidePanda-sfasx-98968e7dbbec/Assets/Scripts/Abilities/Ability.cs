@@ -18,6 +18,8 @@ public abstract class Ability
         { "basic_attack", new AbilityBasicAttack() },
         { "heal", new AbilityHeal() },
         { "fireball", new AbilityFireball() },
+        { "blink", new AbilityBlink() },
+        { "root", new AbilityRoot() },
     };
 
     // the current cooldown of this ability

@@ -74,7 +74,22 @@ MonoBehaviour:
     inaccessible:
     - {fileID: 995914083239812306, guid: 9862ccd56c77a554fae6cb6fb59f64c4, type: 3}
     - {fileID: 995914083239812306, guid: 3b6ed39287ccceb428e984aad2691122, type: 3}
-    enemies: []
+    enemies:
+    - enemy: {fileID: 7372244544730475448, guid: b5f38e52a8dd43f409661f8059f1d724,
+        type: 3}
+      value: 5
+      maxValue: 20
+      maxAmount: -1
+    - enemy: {fileID: -7187058670437588796, guid: c3d8fc0f5cfecd542b1a034fbd5b61c2,
+        type: 3}
+      value: 8
+      maxValue: 16
+      maxAmount: 1
+    - enemy: {fileID: 987977167257660761, guid: 201e0754d2974a747b904f51cf70933e,
+        type: 3}
+      value: 2
+      maxValue: 2
+      maxAmount: -1
     accessiblePercentage: 0.85
   - name: Magma
     accessible:
@@ -85,6 +100,21 @@ MonoBehaviour:
     - {fileID: 995914083239812306, guid: 7ed4bdf9dff86ae4d88a188e72aa8209, type: 3}
     - {fileID: 995914083239812306, guid: 7ed4bdf9dff86ae4d88a188e72aa8209, type: 3}
     - {fileID: 995914083239812306, guid: ef37432746d20b640973544e3b4e1794, type: 3}
-    enemies: []
+    enemies:
+    - enemy: {fileID: 7372244544730475448, guid: b5f38e52a8dd43f409661f8059f1d724,
+        type: 3}
+      value: 5
+      maxValue: 20
+      maxAmount: -1
+    - enemy: {fileID: -7187058670437588796, guid: c3d8fc0f5cfecd542b1a034fbd5b61c2,
+        type: 3}
+      value: 8
+      maxValue: 16
+      maxAmount: 1
+    - enemy: {fileID: 987977167257660761, guid: 201e0754d2974a747b904f51cf70933e,
+        type: 3}
+      value: 2
+      maxValue: 2
+      maxAmount: -1
     accessiblePercentage: 0.7
   Size: {x: 11, y: 11}

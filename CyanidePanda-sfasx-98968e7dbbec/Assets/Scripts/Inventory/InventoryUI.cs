@@ -68,7 +68,7 @@ public class InventoryUI : MonoBehaviour
     {
         currentInventory = inventory;
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             inventories[i].gameObject.SetActive(i == (currentInventory + 1));
         }
@@ -135,6 +135,10 @@ public class InventoryUI : MonoBehaviour
             {
                 CreateMenuItem(kvp.Key, inventories[3]);
             }
+            else if (i is SpellBook)
+            {
+                CreateMenuItem(kvp.Key, inventories[5]);
+            }
             else
             {
                 CreateMenuItem(kvp.Key, inventories[4]);
@@ -154,7 +158,7 @@ public class InventoryUI : MonoBehaviour
         }
 
         // get all active elements in each inventory
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             InventoryElement[] elements = inventories[i + 1].GetComponentsInChildren<InventoryElement>(true);
             List<InventoryElement> validElements = new List<InventoryElement>();
@@ -200,6 +204,8 @@ public class InventoryUI : MonoBehaviour
         // set the item UI
         if (currentItem != null)
         {
+            itemStats.isShop = false;
+
             // find the item type
             if (currentItem is Weapon)
             {

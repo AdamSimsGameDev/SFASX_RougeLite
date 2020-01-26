@@ -272,6 +272,7 @@ Transform:
   - {fileID: 6605338216350980130}
   - {fileID: 5472903430148910018}
   - {fileID: 6729022581984478385}
+  - {fileID: 205366306569180534}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -310,7 +311,6 @@ MonoBehaviour:
   maxHealth: 15
   mana: 0
   maxMana: 0
-  overheadCanvas: {fileID: 6729022581984478385}
   armour:
   - 
   - 
@@ -334,6 +334,7 @@ MonoBehaviour:
         max: 3
       value: 100
     chanceItems: []
+  avoidPlayer: 0
 --- !u!1 &9106621070006792520
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,6 +366,81 @@ Transform:
   m_Father: {fileID: 3692886399112271132}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2602863932049172460
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 7423316170856043436}
+    m_Modifications:
+    - target: {fileID: 5863104278132348965, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_Name
+      value: RootedObject
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: eeb7d2e56c4a8c24589de204d96bf920, type: 3}
+--- !u!4 &205366306569180534 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2794098078080332442, guid: eeb7d2e56c4a8c24589de204d96bf920,
+    type: 3}
+  m_PrefabInstance: {fileID: 2602863932049172460}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8552494219548025279
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -372,11 +448,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7423316170856043436}
     m_Modifications:
-    - target: {fileID: 3654956252248736878, guid: 17ce9b15ec27aec469b057944bf939ca,
-        type: 3}
-      propertyPath: m_Name
-      value: EnemyHealthCanvas
-      objectReference: {fileID: 0}
     - target: {fileID: 3157826321971258638, guid: 17ce9b15ec27aec469b057944bf939ca,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -511,6 +582,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3654956252248736878, guid: 17ce9b15ec27aec469b057944bf939ca,
+        type: 3}
+      propertyPath: m_Name
+      value: EnemyHealthCanvas
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17ce9b15ec27aec469b057944bf939ca, type: 3}

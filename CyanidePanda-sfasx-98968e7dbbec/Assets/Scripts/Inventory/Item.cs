@@ -167,3 +167,39 @@ public class Armour : Item
         InventoryUI.instance.UpdateInventory();
     }
 }
+
+public class SpellBook : Item
+{
+    public string abilityKey;
+
+    public bool isEquipped
+    {
+        get
+        {
+            for (int i = 0; i < Global.instance.abilities.Length; i++)
+            {
+                if (Global.instance.abilities[i] == abilityKey)
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    public SpellBook(int value, string name, string description, string abilityKey) : base(value, name, description)
+    {
+        this.abilityKey = abilityKey;
+    }
+
+    public override void Use()
+    {
+        if (isEquipped)
+        {
+            Global.instance.UnequipAbility(abilityKey);
+        }
+        else
+        {
+            Global.instance.EquipAbility(abilityKey);
+        }
+        InventoryUI.instance.UpdateInventory();
+    }
+}

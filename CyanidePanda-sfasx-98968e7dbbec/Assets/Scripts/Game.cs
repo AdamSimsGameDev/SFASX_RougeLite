@@ -151,7 +151,7 @@ public class Game : MonoBehaviour
         CameraControls.MoveToPosition(character.transform.position);
         EnemyManager.instance.Initialize((int)Global.instance.currentLevel.biome);
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 3; i++)
         {
             if (Global.instance.abilities[i] != "")
             {

@@ -161,6 +161,8 @@ public class Character : Entity
             ab.Init(this);
         }
 
+        RootTurns--;
+
         // reset the menu to the basic action menu
         Game.ui.SetCurrentMenu("actionsMenu");
     }

@@ -51,6 +51,8 @@ public class Entity : MonoBehaviour
     public bool IsMoving { get; set; }
     public bool IsDead { get; set; }
 
+    public int RootTurns { get; set; }
+
     // whether an ability is being processed
     [HideInInspector] public bool IsProcessingAbility;
     // a dictionary of this player's abilities
@@ -92,7 +94,10 @@ public class Entity : MonoBehaviour
     }
     protected virtual void OnUpdate()
     {
-
+        if (transform.Find("RootedObject") != null)
+        {
+            transform.Find("RootedObject").gameObject.SetActive(RootTurns > 0);
+        }
     }
 
     public virtual void UseAbility(bool isAI, string ability, EnvironmentTile targetTile)

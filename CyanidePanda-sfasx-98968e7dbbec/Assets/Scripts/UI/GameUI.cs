@@ -81,7 +81,7 @@ public class GameUI : MenuManager
     public void StartGame()
     {
         // populate ability menu
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 3; i++)
         {
             string tag = Global.instance.abilities[i];
 

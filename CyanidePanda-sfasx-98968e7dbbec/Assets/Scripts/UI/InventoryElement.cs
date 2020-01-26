@@ -33,6 +33,11 @@ public class InventoryElement : ConditionalElement
                 Weapon weapon = (Weapon)item;
                 isEquipped = weapon.isEquipped;
             }
+            else if (item is SpellBook)
+            {
+                SpellBook book = (SpellBook)item;
+                isEquipped = book.isEquipped;
+            }
 
             text.text = (isEquipped ? "(E)" : "") + item.name.ToUpper();
             amount.text = item.amount.ToString();
