@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8583491623119781674
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8583491623119781672}
+  - component: {fileID: 8583491623119781673}
+  m_Layer: 0
+  m_Name: Environment
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8583491623119781672
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8583491623119781674}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8583491623119781673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8583491623119781674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3d4e0f73bc020942b92e7fc8a67f565, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  biomes:
+  - name: Meadow
+    accessible:
+    - {fileID: 995914083239812306, guid: b331296c6b1898747a15aa9c0c53b9c5, type: 3}
+    - {fileID: -676927633112466271, guid: add96457ef8caf04ca4813656086961c, type: 3}
+    - {fileID: -676927633112466271, guid: f6855f181f654bb429660f3b448b798a, type: 3}
+    inaccessible:
+    - {fileID: 995914083239812306, guid: 2e7bfbe1f9affa249877ad383895bcf9, type: 3}
+    enemies:
+    - enemy: {fileID: 987977167257660761, guid: 201e0754d2974a747b904f51cf70933e,
+        type: 3}
+      value: 2
+    - enemy: {fileID: 7372244544730475448, guid: b5f38e52a8dd43f409661f8059f1d724,
+        type: 3}
+      value: 5
+    accessiblePercentage: 0.85
+  - name: Desert
+    accessible:
+    - {fileID: 995914083239812306, guid: 8daf09579fccffa4b918aee18b0c7c8d, type: 3}
+    inaccessible:
+    - {fileID: 995914083239812306, guid: 9862ccd56c77a554fae6cb6fb59f64c4, type: 3}
+    - {fileID: 995914083239812306, guid: 3b6ed39287ccceb428e984aad2691122, type: 3}
+    enemies: []
+    accessiblePercentage: 0.85
+  - name: Magma
+    accessible:
+    - {fileID: 995914083239812306, guid: fa4b2cdaffbe81a45aa3c36996567874, type: 3}
+    inaccessible:
+    - {fileID: 995914083239812306, guid: 7ed4bdf9dff86ae4d88a188e72aa8209, type: 3}
+    - {fileID: 995914083239812306, guid: 7ed4bdf9dff86ae4d88a188e72aa8209, type: 3}
+    - {fileID: 995914083239812306, guid: 7ed4bdf9dff86ae4d88a188e72aa8209, type: 3}
+    - {fileID: 995914083239812306, guid: 7ed4bdf9dff86ae4d88a188e72aa8209, type: 3}
+    - {fileID: 995914083239812306, guid: ef37432746d20b640973544e3b4e1794, type: 3}
+    enemies: []
+    accessiblePercentage: 0.7
+  Size: {x: 11, y: 11}

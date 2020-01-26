@@ -13,10 +13,12 @@ public class Game : MonoBehaviour
     [SerializeField] private Character Character;
     [SerializeField] private Canvas Menu;
     [SerializeField] private Canvas Hud;
+    [SerializeField] private Canvas WinScreen;
     [SerializeField] private Transform CharacterStart;
 
     public bool IsPlaying;
     public bool IsTurnRunning;
+    public bool IsLevelEnded;
     public int CurrentTurn;
 
     public bool isFreeLooking;
@@ -29,6 +31,9 @@ public class Game : MonoBehaviour
 
     private void Awake()
     {
+        // seed the level with the given seed
+        Random.InitState(Global.instance.currentLevel.seed);
+
         if (instance != null)
             Destroy(gameObject);
         instance = this;
@@ -39,12 +44,18 @@ public class Game : MonoBehaviour
     {
         mRaycastHits = new RaycastHit[NumberOfRaycastHits];
         character = Instantiate(Character, transform); 
-        ShowMenu(true);
+        ShowMenu(false);
     }
     private void Update()
     {
-        if (IsPlaying)
+        if (IsPlaying && !IsLevelEnded)
         {
+            if (EnemyManager.instance.enemies.Count == 0)
+            {
+                // COMPLETE THE LEVEL :)
+                StartCoroutine(EndLevel());
+            }
+
             if (!IsTurnRunning)
             {
                 if (Input.GetButtonDown("Look"))
@@ -64,18 +75,6 @@ public class Game : MonoBehaviour
 
             if (!character.IsMoving)
             {
-                /*Ray screenClick = MainCamera.ScreenPointToRay(Input.mousePosition);
-                int hits = Physics.RaycastNonAlloc(screenClick, mRaycastHits);
-                if (hits > 0)
-                {
-                    EnvironmentTile tile = mRaycastHits[0].transform.GetComponent<EnvironmentTile>();
-                    character.targetTile = tile;
-                }
-                else
-                {
-                    character.targetTile = null;
-                }*/
-
                 int x = Mathf.RoundToInt(GameObject.Find("Cursor").transform.position.x / 10.0F) + Environment.instance.Size.x / 2;
                 int y = Mathf.RoundToInt(GameObject.Find("Cursor").transform.position.z / 10.0F) + Environment.instance.Size.y / 2;
                 character.targetTile = Environment.instance.GetTile(x, y);
@@ -85,10 +84,18 @@ public class Game : MonoBehaviour
                     character.targetTile = character.currentPosition;
                 }
 
-                if (Input.GetButtonDown("Use") && CurrentTurn >= 0)
+                if (Input.GetButtonDown("Use") && CurrentTurn >= 0 && character.IsProcessingAbility == false)
                 {
-                    character.UseCurrentAbility();
+                    character.UseAbility(false, character.currentAbility, character.targetTile);
                 }
+            }
+        }
+
+        if (IsLevelEnded)
+        {
+            if (Input.GetButtonDown("Use"))
+            {
+                Global.instance.BackToWorldMap(true);
             }
         }
     }
@@ -118,7 +125,8 @@ public class Game : MonoBehaviour
 
     public void Generate()
     {
-        Environment.instance.GenerateWorld();
+        // create the correct environment from the biome
+        Environment.instance.GenerateWorld(Global.instance.currentLevel.biome);
     }
 
     public void Exit()
@@ -130,6 +138,8 @@ public class Game : MonoBehaviour
 
     private void StartGame ()
     {
+        Generate();
+
         character.transform.position = Environment.instance.StartTile.Position;
         character.transform.rotation = Quaternion.identity;
         character.currentPosition = Environment.instance.StartTile;
@@ -137,18 +147,42 @@ public class Game : MonoBehaviour
         Environment.instance.StartTile.Occupier = character.gameObject;
         Environment.instance.StartTile.State = EnvironmentTile.TileState.Player;
 
-        CurrentTurn = 0;
-        character.Init();
-
         CameraControls.MoveToPosition(character.transform.position);
-        EnemyManager.instance.Initialize(2);
+        EnemyManager.instance.Initialize(Environment.instance.biomes[(int)Global.instance.currentLevel.biome]);
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (Global.instance.abilities[i] != "")
+            {
+                character.AddAbility(Global.instance.abilities[i]);
+            }
+        }
+
+        character.SetWeapon(Global.instance.weapon);
+        for (int i = 0; i < 4; i++)
+        {
+            character.SetArmour(i, Global.instance.armour[i]);
+        }
+
+        ui.StartGame();
 
         IsPlaying = true;
+
+        CurrentTurn = 0;
+
+        character.Init();
+        ui.SetCurrentMenu("actionsMenu");
     }
 
     public void SetPlayerAbility (string ability)
     {
         character.SetCurrentAbility(ability);
+    }
+    public void SetPlayerHoveredAbility(string ability)
+    {
+        if (!IsPlaying)
+            return;
+        character.SetHoveredAbility(ability);
     }
 
     // turn system
@@ -169,5 +203,26 @@ public class Game : MonoBehaviour
 
         character.EndTurn();
         ui.EndTurn();
+    }
+
+    // end the level
+    private IEnumerator EndLevel ()
+    {
+        IsLevelEnded = true;
+
+        foreach (KeyValuePair<string, Ability> ab in Ability.abilities)
+            ab.Value.currentCooldown = 0;
+
+        float timer = 0.0F;
+        do
+        {
+            timer = Mathf.Clamp01(timer + Time.deltaTime);
+
+            Hud.GetComponent<CanvasGroup>().alpha = 1.0F - timer;
+            WinScreen.GetComponent<CanvasGroup>().alpha = timer;
+
+            yield return null;
+        }
+        while (timer != 1.0F);
     }
 }

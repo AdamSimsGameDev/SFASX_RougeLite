@@ -6,9 +6,7 @@ public class Environment : MonoBehaviour
 {
     public static Environment instance;
 
-    [SerializeField] private List<EnvironmentTile> AccessibleTiles;
-    [SerializeField] private List<EnvironmentTile> InaccessibleTiles;
-    [SerializeField] private float AccessiblePercentage;
+    public Biome[] biomes;
 
     public Vector2Int Size;
 
@@ -100,7 +98,7 @@ public class Environment : MonoBehaviour
         return mMap[x][y];
     }
 
-    private void Generate()
+    private void Generate(BiomeType biome)
     {
         // Setup the map of the environment tiles according to the specified width and height
         // Generate tiles from the list of accessible and inaccessible prefabs using a random
@@ -120,8 +118,8 @@ public class Environment : MonoBehaviour
             {
                 start = halfWidth == x && halfHeight == y;
 
-                bool isAccessible = start || Random.value < AccessiblePercentage;
-                List<EnvironmentTile> tiles = isAccessible ? AccessibleTiles : InaccessibleTiles;
+                bool isAccessible = start || Random.value < biomes[(int)biome].accessiblePercentage;
+                List<EnvironmentTile> tiles = isAccessible ? biomes[(int)biome].accessible : biomes[(int)biome].inaccessible;
                 EnvironmentTile prefab = tiles[Random.Range(0, tiles.Count)];
                 EnvironmentTile tile = Instantiate(prefab, position, Quaternion.identity, transform);
                 tile.Position = new Vector3( position.x + (TileSize / 2), TileHeight, position.z + (TileSize / 2));
@@ -227,9 +225,9 @@ public class Environment : MonoBehaviour
         // calculate the global goal and work out the best order to prossess nodes in
         return Vector3.Distance(a.Position, b.Position);
     }
-    public void GenerateWorld()
+    public void GenerateWorld(BiomeType biome)
     {
-        Generate();
+        Generate(biome);
         SetupConnections();
     }
     public void CleanUpWorld()

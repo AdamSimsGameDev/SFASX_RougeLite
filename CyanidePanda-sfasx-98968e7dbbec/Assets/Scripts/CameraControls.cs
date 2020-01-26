@@ -10,6 +10,7 @@ public class CameraControls : MonoBehaviour
     public float movementTime;
     [Space]
     public bool isMoving;
+    public bool allowMovement = true;
 
     [System.NonSerialized]
     public Transform attachedTarget;
@@ -23,42 +24,45 @@ public class CameraControls : MonoBehaviour
     }
     private void Update()
     {
-        Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0.0F, Input.GetAxis("Vertical"));
-        if (isMoving)
+        if (allowMovement)
         {
-            if (input.magnitude != 0.0F && attachedTarget == null)
+            Vector3 input = new Vector3(Input.GetAxis("Horizontal"), 0.0F, Input.GetAxis("Vertical"));
+            if (isMoving)
             {
-                StopCoroutine(MoveCoroutine);
-                isMoving = false;
+                if (input.magnitude != 0.0F && attachedTarget == null)
+                {
+                    StopCoroutine(MoveCoroutine);
+                    isMoving = false;
+                }
+                else
+                {
+                    return;
+                }
             }
-            else
-            {
+
+            if (Game.character.currentAbility == "" && !Game.instance.isFreeLooking)
                 return;
-            }
+
+            transform.Translate(input * Time.deltaTime * movementSpeed);
+
+            // clamp X
+            float sizeX = Environment.instance.Size.x * 10;
+            float halfX = (sizeX / 2.0F);
+
+            if (transform.position.x < -halfX + 1.0F)
+                transform.position = new Vector3(-halfX + 1.0F, transform.position.y, transform.position.z);
+            else if (transform.position.x > halfX - 1.0F)
+                transform.position = new Vector3(halfX - 1.0F, transform.position.y, transform.position.z);
+
+            // clamp Z
+            float sizeY = Environment.instance.Size.y * 10;
+            float halfY = (sizeY / 2.0F);
+
+            if (transform.position.z < -halfY + 1.0F)
+                transform.position = new Vector3(transform.position.x, transform.position.y, -halfY + 1.0F);
+            else if (transform.position.z > halfY - 1.0F)
+                transform.position = new Vector3(transform.position.x, transform.position.y, halfY - 1.0F);
         }
-
-        if (Game.character.currentAbility == "" && !Game.instance.isFreeLooking)
-            return;
-
-        transform.Translate(input * Time.deltaTime * movementSpeed);
-
-        // clamp X
-        float sizeX = Environment.instance.Size.x * 10;
-        float halfX = (sizeX / 2.0F);
-
-        if (transform.position.x < -halfX + 1.0F)
-            transform.position = new Vector3(-halfX + 1.0F, transform.position.y, transform.position.z);
-        else if (transform.position.x > halfX - 1.0F)
-            transform.position = new Vector3(halfX - 1.0F, transform.position.y, transform.position.z);
-
-        // clamp Z
-        float sizeY = Environment.instance.Size.y * 10;
-        float halfY = (sizeY / 2.0F);
-
-        if (transform.position.z < -halfY + 1.0F)
-            transform.position = new Vector3(transform.position.x, transform.position.y, -halfY + 1.0F);
-        else if (transform.position.z > halfY - 1.0F)
-            transform.position = new Vector3(transform.position.x, transform.position.y, halfY - 1.0F);
     }
 
     public static void MoveToPosition (Vector3 targetPosition)
@@ -82,14 +86,16 @@ public class CameraControls : MonoBehaviour
         isMoving = true;
 
         Vector3 startPosition = transform.position;
+        float lerp = 0.0F;
 
         do
         {
-            transform.position = Vector3.Lerp(transform.position, target, Time.deltaTime * 2.5F);
+            lerp = Mathf.Clamp01(lerp + (Time.deltaTime * 2.5F));
+            transform.position = Vector3.Lerp(startPosition, target, lerp);
 
             yield return null;
         }
-        while (Vector3.Distance(transform.position, target) > 0.5F);
+        while (lerp != 1.0F);
 
         isMoving = false;
     }
@@ -98,14 +104,16 @@ public class CameraControls : MonoBehaviour
         isMoving = true;
 
         Vector3 startPosition = transform.position;
+        float lerp = 0.0F;
 
         do
         {
-            transform.position = Vector3.Lerp(transform.position, attachedTarget.position, Time.deltaTime * 2.5F);
+            lerp = Mathf.Clamp01(lerp + (Time.deltaTime * 2.5F));
+            transform.position = Vector3.Lerp(startPosition, attachedTarget.position, lerp);
            
             yield return null;
         }
-        while (attachedTarget != null);
+        while (lerp != 1.0F || attachedTarget != null);
 
         isMoving = false;
     }

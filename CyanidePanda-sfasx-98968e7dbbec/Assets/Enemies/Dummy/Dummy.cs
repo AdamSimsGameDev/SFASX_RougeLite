@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Dummy : Enemy
 {
+    protected override void SetupAbilities()
+    {
+        return;
+    }
+
     public override IEnumerator ProcessTurn()
     {
         IsCurrentlyProcessingTurn = true;

@@ -2,51 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : MonoBehaviour
+public class Character : Entity
 {
-    [SerializeField] private float SingleNodeMoveTime = 0.5f;
-
-    // stats
-    public int health;
-    public int maxHealth;
-    [Space]
-    public int stamina;
-    public int maxStamina;
-
-    // the characters current position
-    public EnvironmentTile currentPosition { get; set; }
-
     // the destination that the character is currently looking at pathing towards.
     public EnvironmentTile targetTile { get; set; }
     // the previous destination that the character was looking at pathing towards.
     private EnvironmentTile lastTargetTile { get; set; }
 
-    public bool IsMoving { get; set; }
-
+    // the player's current ability
     public string currentAbility;
-    public Dictionary<string, Ability> abilities = new Dictionary<string, Ability>();
+    // the player's current hovered ability
+    public string hoveredAbility;
 
     // the path visualiser attached to this character
-    public PathVisualiser pathVisualiser;
+    [HideInInspector] public PathVisualiser pathVisualiser;
 
-    private Animator animator;
+    // the last attacked enemy
+    private Enemy target;
 
-    private void Awake()
-    {
-        animator = GetComponent<Animator>();
-    }
-    private void Start()
-    {
-        pathVisualiser = Instantiate((GameObject)Resources.Load("PathVisualiser")).GetComponent<PathVisualiser>();
-    }
-    private void Update()
+    protected override void OnUpdate()
     {
         // if the character is now looking at a different tile, revisualise the ability
         if (targetTile != lastTargetTile)
         {
             if (currentAbility != "")
             {
-                if (stamina >= abilities[currentAbility].staminaCost && !abilities[currentAbility].isCooldown)
+                if (mana >= abilities[currentAbility].manaCost && !abilities[currentAbility].isCooldown)
                 {
                     abilities[currentAbility].Visualise(targetTile);
                 }
@@ -58,8 +39,12 @@ public class Character : MonoBehaviour
         animator.SetBool("IsWalking", IsMoving);
     }
 
+    /// <summary>
+    /// Initializes the player's variables when the level starts.
+    /// </summary>
     public void Init()
     {
+        pathVisualiser = Instantiate((GameObject)Resources.Load("PathVisualiser")).GetComponent<PathVisualiser>();
         pathVisualiser.current = currentPosition;
 
         AddAbility("move");
@@ -69,29 +54,27 @@ public class Character : MonoBehaviour
         {
             kvp.Value.Init(this);
         }
+
+        SetWeapon(Global.instance.weapon);
+        for (int i = 0; i < 4; i++)
+        {
+            SetArmour(i, Global.instance.armour[i]);
+        }
     }
 
+    /// <summary>
+    /// Adds an ability to the player's ability list.
+    /// </summary>
+    /// <param name="tag"></param>
     public void AddAbility(string tag)
     {
         abilities.Add(tag, Ability.abilities[tag]);
     }
 
-    public void UseCurrentAbility ()
-    {
-        if (currentAbility == "")
-            return;
-
-        if (stamina >= abilities[currentAbility].staminaCost && !abilities[currentAbility].isCooldown)
-        {
-            if (abilities[currentAbility].Use(targetTile))
-            {
-                stamina -= abilities[currentAbility].staminaCost;
-                SetCurrentAbility("");
-                // set the current menu to the previous menu
-                Game.ui.ReturnToPreviousMenu();
-            }
-        }
-    }
+    /// <summary>
+    /// Sets the current ability.
+    /// </summary>
+    /// <param name="ability"></param>
     public void SetCurrentAbility (string ability)
     {
         // if the last ability wasn't null, clear it's visualisation
@@ -101,11 +84,14 @@ public class Character : MonoBehaviour
         // if the new ability isn't null we need to do a few checks
         if (ability != "")
         {
+            // re-initialize the ability
+            abilities[ability].Init(this);
+
             // if the ability is on cooldown however we don't want the player to be able to use it.
             if (abilities[ability].isCooldown)
                 return;
-            // the same applies if the player doesn't have enough stamina
-            if (stamina < abilities[ability].staminaCost)
+            // the same applies if the player doesn't have enough mana
+            if (mana < abilities[ability].manaCost)
                 return;
         }
         // if neither of these are true we set the current ability.
@@ -117,10 +103,55 @@ public class Character : MonoBehaviour
             abilities[currentAbility].Visualise(targetTile);
         }
     }
+    /// <summary>
+    /// Sets the hovered ability.
+    /// </summary>
+    /// <param name="ability"></param>
+    public void SetHoveredAbility(string ability)
+    {
+        hoveredAbility = ability;
+    }
 
+    /// <summary>
+    /// Use an ability as the player and set it's hovered ability to be empty.
+    /// </summary>
+    /// <param name="isAI"></param>
+    /// <param name="ability"></param>
+    /// <param name="targetTile"></param>
+    public override void UseAbility(bool isAI, string ability, EnvironmentTile targetTile)
+    {
+        // is on cooldown
+        base.UseAbility(isAI, ability, targetTile);
+
+        // if the current ability wasn't on cooldown originally
+        // set the hovered ability and current ability to be empty
+        if (ability != "")
+        {
+            SetHoveredAbility("");
+        }
+    }
+
+    /// <summary>
+    /// Finishes using the character's current ability.
+    /// </summary>
+    public override void FinishUsingAbility()
+    {
+        base.FinishUsingAbility();
+
+        // sets the current ability to non-existant
+        SetCurrentAbility("");
+        // set the current menu to the previous menu
+        Game.ui.ReturnToPreviousMenu();
+        // update the path visualiser's current position (just in case it changed)
+        pathVisualiser.current = currentPosition;
+    }
+
+    /// <summary>
+    /// This is ran when the turn ends, updating the player's variables.
+    /// </summary>
     public void EndTurn()
     {
-        stamina = maxStamina;
+        mana = maxMana;
 
         foreach(KeyValuePair<string, Ability> kvp in abilities)
         {
@@ -134,90 +165,30 @@ public class Character : MonoBehaviour
         Game.ui.SetCurrentMenu("actionsMenu");
     }
 
-    private IEnumerator DoMove(Vector3 position, Vector3 destination)
-    {
-        // Move between the two specified positions over the specified amount of time
-        if (position != destination)
-        {
-            transform.rotation = Quaternion.LookRotation(destination - position, Vector3.up);
-
-            Vector3 p = transform.position;
-            float t = 0.0f;
-
-            while (t < SingleNodeMoveTime)
-            {
-                t += Time.deltaTime;
-                p = Vector3.Lerp(position, destination, t / SingleNodeMoveTime);
-                transform.position = p;
-                yield return null;
-            }
-        }
-    }
-    private IEnumerator DoGoTo(List<EnvironmentTile> route)
-    {
-        // Move through each tile in the given route
-        if (route != null)
-        {
-            IsMoving = true;
-
-            Vector3 position = currentPosition.Position;
-            for (int count = 0; count < route.Count; ++count)
-            {
-                Vector3 next = route[count].Position;
-                yield return DoMove(position, next);
-
-                // remove the last path position from the visualiser
-                pathVisualiser.RemoveAtTile(route[count]);
-
-                // set the last position to accessible.
-                currentPosition.State = EnvironmentTile.TileState.None;
-                currentPosition.Occupier = null;
-
-                // get the new position
-                currentPosition = route[count];
-
-                // set the current position to inaccessible.
-                currentPosition.State = EnvironmentTile.TileState.Player;
-                currentPosition.Occupier = gameObject;
-
-                position = next;
-            }
-
-            IsMoving = false;
-
-            foreach (KeyValuePair<string, Ability> kvp in abilities)
-            {
-                kvp.Value.Init(this);
-            }
-        }
-
-        if (CameraControls.instance.attachedTarget == transform)
-            CameraControls.instance.attachedTarget = null;
-
-        // update the path visualiser's current position
-        pathVisualiser.current = currentPosition;
-    }
-    public void GoTo(List<EnvironmentTile> route)
-    {
-        // Clear all coroutines before starting the new route so 
-        // that clicks can interupt any current route animation
-        StopAllCoroutines();
-        StartCoroutine(DoGoTo(route));
-    }
-
+    /// <summary>
+    /// The function that is ran when the player's feet touch the ground in the animations.
+    /// </summary>
     public void Footstep()
     {
 
     }
 
-    private Enemy target;
-    public void Attack (Enemy enemy)
-    {
-        target = enemy;
-        animator.SetTrigger("Attack");
-    }
+    /// <summary>
+    /// Damages the target enemy when the animation trigger is activated.
+    /// </summary>
     public void Hit ()
     {
-        target.Damage(1); // replace 1 in future with weapon damage
+        int d = 0;
+        if (lastUsedAbility.useWeapon)
+        {
+            // if we use the weapon damage, set the damage dealt to our attack damage
+            d = weapon == "" ? attackDamage : ((Weapon)Inventory.instance.allItems[weapon]).damage;
+        }
+        else
+        {
+            // otherwise set it to the damage the ability does
+            d = lastUsedAbility.damage;
+        }
+        abilities[currentAbility].DamageTarget(d, weapon == "" ? attackElement : ((Weapon)Inventory.instance.allItems[weapon]).element);
     }
 }

@@ -13,6 +13,8 @@ public class MenuElement : MonoBehaviour
     public UnityEvent onUse;
     // the events that are ran when this element is used with the back button.
     public UnityEvent onBack;
+    // the events that are ran when this element is hovered over.
+    public UnityEvent onHover;
 
     private void Start()
     {
@@ -44,5 +46,10 @@ public class MenuElement : MonoBehaviour
     {
         // set the activity of the element
         isActive = active;
+
+        if (isActive)
+        {
+            onHover.Invoke();
+        }
     }
 }

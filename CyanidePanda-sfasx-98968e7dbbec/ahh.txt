@@ -1,0 +1,56 @@
+6 elements:
+- normal
+- fire
+- water
+- grass
+- light
+- dark
+
+areas i can make:
+- meadows
+- forest
+- deep (dark) forest
+- desert
+- swamp
+- snow / tundra
+- magma crags
+- beach
+- mountain
+
+enemies:
+- [?] elemental slimes, one for each, with each attacking differently-ish
+- bandits for each biome, each equipped and elemented to that biome (except light) e.g. pirates!
+- trolls 
+- goblins
+- golems
+- draugr
+- harpy
+- [?] snake
+- angel
+- demon
+- giant bat
+- necromancer
+- skeleton (goes along with necromancer)
+- [?] sentient mushroom creature
+
+things i need to do before the hand in:
++ inventory pages
++ enemy spawning properly
+- more enemies
+- more weapons
++ more armour sets
+- more consumables, used as drops maybe
+- some misc items
+- more abilities
+	- fire bolt
+	- leap
+	- life steal
+	- poison
+	- root
+	- necromancy (raise dead)
+- create shop
++ biomes! at least 3 + new tilesets
+- main menu
+- polish the game elements
+- write up
+- comment as much code as i can

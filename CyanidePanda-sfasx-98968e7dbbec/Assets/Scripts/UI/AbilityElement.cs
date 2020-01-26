@@ -16,7 +16,7 @@ public class AbilityElement : ConditionalElement
             {
                 // the player has the ability.
                 // this means that we can check to see if we need to hide it or not.
-                if (a.isCooldown || Game.character.stamina < a.staminaCost)
+                if (a.isCooldown || Game.character.mana < a.manaCost)
                 {
                     // we can't use the ability.
                     switch(hiddenType)

@@ -12,6 +12,10 @@ public class Menu : MonoBehaviour
     public MenuElement[] selectionElements;
     // the currently selected element
     public int currentElement = 0;
+    // the last selected element
+    public int lastElement = 0;
+    // reset menu element on visit
+    public bool resetElement;
 
     // whether the menu is active
     public bool isActive = false;
@@ -21,6 +25,9 @@ public class Menu : MonoBehaviour
 
     // whether the element has been switched without having released the analog stick, to avoid the change being too quick.
     public bool hasSwitched = false;
+
+    // whether this menu is a part of the map scene
+    public bool IsMapMenu;
 
     // whether the menu will be disabled graphically when it isn't in use
     public bool disableWhenInactive = false;
@@ -40,52 +47,57 @@ public class Menu : MonoBehaviour
         if (isActive == false)
             return;
 
-        // handle button input
-        HandleButtonInput();
-
-        /*
-        // check to see if the player has an ability selected, if so we don't want them to have any further control of the menu.
-        // the reason we do this after the 'jump' input is to allow for the use of back buttons
-        if (Game.character.currentAbility != -1)
-            return;
-        */
-
-        // get the vertical axis, either W and S or the right analog stick's up and down movement.
-        float y = Input.GetAxisRaw("Vertical");
-
-        // if this value is equal to 0, it means that we aren't trying to move it.
-        if (y == 0.0F)
+        bool canUse = false;
+        if (IsMapMenu && !Global.instance.IsPlaying)
         {
-            // this means we can reset the bool for the switch.
-            hasSwitched = false;
+            canUse = true;
         }
-        // we then test to see if hasSwitched is false\
-        if (hasSwitched == false)
+        else if (!Game.instance.IsPlaying || (Game.instance.IsPlaying && !Game.instance.IsTurnRunning))
         {
-            // we test the input that we got.
-            if (y > 0.0F)
-            {
-                // if the value is higher than 0 we need to move the selection upwards.
-                // we can do this by lowering the currentElement
-                // we also want to wrap it too, so if the value falls lower than 0, set it to the maximum - 1
-                currentElement--;
-                if (currentElement < 0)
-                    currentElement = selectionElements.Length - 1;
+            canUse = true;
+        }
+        if (canUse)
+        {
+            // handle button input
+            HandleButtonInput();
 
-                // we then update the elements to adjust to the new selection.
-                UpdateElements();
+            // get the vertical axis, either W and S or the right analog stick's up and down movement.
+            float y = Input.GetAxisRaw("Vertical");
+
+            // if this value is equal to 0, it means that we aren't trying to move it.
+            if (y == 0.0F)
+            {
+                // this means we can reset the bool for the switch.
+                hasSwitched = false;
             }
-            else if (y < 0.0F)
+            // we then test to see if hasSwitched is false\
+            if (hasSwitched == false)
             {
-                // if the value is lower than 0 we need to move the selection down.
-                // we can do this by raising the currentElement
-                // we also want to wrap it too, so if the value is higher than or equal to the maximum, set it to 0
-                currentElement++;
-                if (currentElement >= selectionElements.Length)
-                    currentElement = 0;
+                // we test the input that we got.
+                if (y > 0.0F)
+                {
+                    // if the value is higher than 0 we need to move the selection upwards.
+                    // we can do this by lowering the currentElement
+                    // we also want to wrap it too, so if the value falls lower than 0, set it to the maximum - 1
+                    currentElement--;
+                    if (currentElement < 0)
+                        currentElement = selectionElements.Length - 1;
 
-                // we then update the elements to adjust to the new selection.
-                UpdateElements();
+                    // we then update the elements to adjust to the new selection.
+                    UpdateElements();
+                }
+                else if (y < 0.0F)
+                {
+                    // if the value is lower than 0 we need to move the selection down.
+                    // we can do this by raising the currentElement
+                    // we also want to wrap it too, so if the value is higher than or equal to the maximum, set it to 0
+                    currentElement++;
+                    if (currentElement >= selectionElements.Length)
+                        currentElement = 0;
+
+                    // we then update the elements to adjust to the new selection.
+                    UpdateElements();
+                }
             }
         }
     }
@@ -139,9 +151,6 @@ public class Menu : MonoBehaviour
 
     public void UpdateMenuVisuals ()
     {
-        // at the end of each turn we want to reset the current element
-        currentElement = 0;
-
         // we then set all elements to inactive
         foreach (MenuElement element in selectionElements)
             element.SetActive(false);
