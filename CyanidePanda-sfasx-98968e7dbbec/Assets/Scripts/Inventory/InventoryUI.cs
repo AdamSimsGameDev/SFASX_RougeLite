@@ -149,6 +149,7 @@ public class InventoryUI : MonoBehaviour
     {
         for (int i = 0; i < inventories.Length; i++)
         {
+            Debug.Log(inventories[i] + " " + i);
             inventories[i].GetComponent<Menu>().UpdateMenuVisuals();
         }
 
